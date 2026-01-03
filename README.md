@@ -1,4 +1,9 @@
-# Eagle Plugin Mini Map
+<div align="center">
+  <a href="https://github.com/lawvs/eagle-plugin-mini-map">
+    <img src="https://github.com/lawvs/eagle-plugin-mini-map/raw/refs/heads/main/public/logo.png" alt="Logo" width="80" height="80">
+  </a>
+  <h3>Eagle Plugin Mini Map</h3>
+</div>
 
 A plugin to visualize image locations on a map in Eagle App.
 
