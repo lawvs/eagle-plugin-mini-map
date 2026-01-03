@@ -14,7 +14,7 @@ export function StatusPanel({ state, errorMessage }: StatusPanelProps) {
       case "no-selection":
         return "Select an image in Eagle to view its location.";
       case "no-gps":
-        return "This image is missing GPS coordinates in its EXIF metadata.";
+        return "No GPS data found.";
       case "error":
         return errorMessage || "Unable to read metadata.";
       default:
@@ -26,14 +26,8 @@ export function StatusPanel({ state, errorMessage }: StatusPanelProps) {
 
   return (
     <section className="rounded-2xl border border-white/10 bg-slate-900/60 p-4 shadow-xl shadow-black/40">
-      <div className="flex min-h-45 flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/5 text-center">
+      <div className="min-h-45x flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/5 text-center">
         <p className={`text-sm font-medium ${tone}`}>{copy}</p>
-        {state === "no-gps" && (
-          <p className="mt-2 text-xs text-white/40">
-            Ensure the photo has embedded GPS metadata (GPSLatitude &
-            GPSLongitude).
-          </p>
-        )}
       </div>
     </section>
   );
