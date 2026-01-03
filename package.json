@@ -2,6 +2,11 @@
   "name": "eagle-plugin-mini-map",
   "version": "0.1.0",
   "type": "module",
+  "author": "whitewater <me@waterwater.moe>",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:lawvs/eagle-plugin-mini-map.git"
+  },
   "scripts": {
     "dev": "vite",
     "dev:eagle": "vite build --watch",
