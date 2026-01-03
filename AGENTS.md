@@ -26,6 +26,7 @@ pnpm run lint     # Auto-fix linting issues
 - Uses **strict type checking** with `typescript-eslint` strict config
 - Split configuration: [tsconfig.app.json](../tsconfig.app.json) for app code, [tsconfig.node.json](../tsconfig.node.json) for config files
 - Do not use `any` type; prefer precise types or generics, Use `satisfies` operator when necessary.
+- Use kebab-case for new file and directory names.
 
 ## External Dependencies & Integration
 

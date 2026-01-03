@@ -19,7 +19,7 @@
     "jpg,png": {
       "inspector": {
         "path": "index.html",
-        "height": 100,
+        "height": 320,
         "multiSelect": false
       }
     }
