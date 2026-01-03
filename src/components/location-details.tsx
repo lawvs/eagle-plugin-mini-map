@@ -10,8 +10,8 @@ export function LocationDetails({
   coordinates,
   openMapUrl,
 }: LocationDetailsProps) {
-  const formattedLat = coordinates.latitude.toFixed(5);
-  const formattedLng = coordinates.longitude.toFixed(5);
+  const formattedLat = coordinates.latitude.toFixed(3);
+  const formattedLng = coordinates.longitude.toFixed(3);
   const formattedAlt =
     coordinates.altitude != null
       ? `${coordinates.altitude.toFixed(0)} m`

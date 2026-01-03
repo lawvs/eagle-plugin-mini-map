@@ -84,11 +84,8 @@ const extractExif = (arrayBuffer: ArrayBuffer) => {
     binaryString += String.fromCodePoint(byte);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   const exifObj = piexif.load(binaryString);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   const exifSegmentStr = piexif.dump(exifObj);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   return Buffer.from(exifSegmentStr, "binary");
 };
 
