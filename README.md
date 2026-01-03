@@ -1,16 +1,18 @@
-# [DEMO] Vite React Inspector
+# Eagle Plugin Map
 
-![](docs/sample.png)
+A plugin to visualize image locations on a map in Eagle App.
 
 ## Usage
 
 ```
-$ npm ci
-$ npm run build
+pnpm ci
+pnpm run build
 ```
 
 - Import the `dist` folder as a plugin in Eagle App.
 
-## Note
+## References
 
-> [Getting Started - Your First Plugin](https://developer.eagle.cool/plugin-api/get-started/creating-your-first-plugin)
+- [Getting Started - Your First Plugin](https://developer.eagle.cool/plugin-api/get-started/creating-your-first-plugin)
+- [tuki0918/eagle-inspector-plugin-example](https://github.com/tuki0918/eagle-inspector-plugin-example)
+- [eagle-app/eagle-plugin-examples](https://github.com/eagle-app/eagle-plugin-examples/)

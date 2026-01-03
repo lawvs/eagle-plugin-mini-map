@@ -1,11 +1,19 @@
 {
-  "id": "9952a2b2-499f-4d4e-afd2-2554fe44808a",
+  "id": "7a4a309f-4962-4082-8238-33e5ac50e6eb",
   "version": "0.1.0",
   "platform": "all",
   "arch": "all",
-  "name": "[DEMO] Vite React Inspector",
+  "name": "Map",
   "logo": "logo.png",
-  "keywords": [],
+  "keywords": [
+    "map",
+    "location",
+    "gps",
+    "coordinates",
+    "geolocation",
+    "earth",
+    "exif"
+  ],
   "devTools": true,
   "preview": {
     "jpg,png": {
