@@ -1,4 +1,4 @@
-# Eagle Plugin Map
+# Eagle Plugin Mini Map
 
 A plugin to visualize image locations on a map in Eagle App.
 

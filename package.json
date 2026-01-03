@@ -1,5 +1,5 @@
 {
-  "name": "eagle-plugin-map",
+  "name": "eagle-plugin-mini-map",
   "version": "0.1.0",
   "type": "module",
   "scripts": {

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "platform": "all",
   "arch": "all",
-  "name": "Map",
+  "name": "Mini Map",
   "logo": "logo.png",
   "keywords": [
     "map",
