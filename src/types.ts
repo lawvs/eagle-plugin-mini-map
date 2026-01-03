@@ -1,6 +1,9 @@
-type LoadState = "loading" | "ready" | "no-selection" | "no-gps" | "error";
-
-export type { LoadState };
+export type LoadState =
+  | "loading"
+  | "ready"
+  | "no-selection"
+  | "no-gps"
+  | "error";
 
 export interface Coordinates {
   latitude: number;

@@ -22,9 +22,14 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
     zoom: DEFAULT_ZOOM,
   });
 
-  const handleLoad = useCallback(() => {
-    setIsLoaded(true);
-  }, []);
+  const handleLoad = useCallback(
+    (event: { target: { resize: () => void } }) => {
+      setIsLoaded(true);
+      // Force map to resize to fill container
+      event.target.resize();
+    },
+    [],
+  );
 
   useEffect(() => {
     setViewState((prev) => ({ ...prev, latitude, longitude }));

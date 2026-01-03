@@ -4,7 +4,6 @@ import { StatusPanel } from "./components/status-panel";
 import { eagle } from "./eagle";
 import { IN_EAGLE } from "./eagle/env";
 import type { Item } from "./eagle/types";
-import { useEagleTheme } from "./hooks/use-eagle-theme";
 import { resolveImageLocation } from "./lib/location";
 import type { Coordinates, LoadState } from "./types";
 
@@ -24,7 +23,6 @@ const resolveItemLocation = async (item: Item): Promise<Coordinates | null> => {
 };
 
 function App() {
-  const theme = useEagleTheme();
   const [state, setState] = useState<LoadState>("loading");
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
