@@ -3,7 +3,8 @@ import { LocationDetails } from "./components/location-details";
 import { StatusPanel } from "./components/status-panel";
 import { eagle } from "./eagle";
 import { IN_EAGLE } from "./eagle/env";
-import type { EagleTheme, Item } from "./eagle/types";
+import type { Item } from "./eagle/types";
+import { useEagleTheme } from "./hooks/use-eagle-theme";
 import { resolveImageLocation } from "./lib/location";
 import type { Coordinates, LoadState } from "./types";
 
@@ -23,7 +24,7 @@ const resolveItemLocation = async (item: Item): Promise<Coordinates | null> => {
 };
 
 function App() {
-  const [theme, setTheme] = useState<EagleTheme>("LIGHT");
+  const theme = useEagleTheme();
   const [state, setState] = useState<LoadState>("loading");
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -62,15 +63,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    let mounted = true;
-
-    const applyTheme = (value: EagleTheme) => {
-      if (!mounted) return;
-      setTheme(value);
-    };
-
     const initialize = () => {
-      applyTheme(eagle.app.theme);
       void loadSelection();
     };
 
@@ -79,19 +72,10 @@ function App() {
       eagle.onPluginRun(() => {
         void loadSelection();
       });
-      eagle.onThemeChanged(applyTheme);
     } else {
       initialize();
     }
-
-    return () => {
-      mounted = false;
-    };
   }, [loadSelection]);
-
-  useEffect(() => {
-    document.body.setAttribute("data-theme", theme.toLowerCase());
-  }, [theme]);
 
   const openMapUrl = useMemo(() => {
     if (!coordinates) {
