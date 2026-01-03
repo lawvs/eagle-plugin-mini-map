@@ -2,6 +2,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useCallback, useEffect, useState } from "react";
 import Map from "react-map-gl/maplibre";
 import type { Coordinates } from "../types";
+import { ZoomControls } from "./zoom-controls";
 
 interface MiniMapProps extends Coordinates {
   label?: string;
@@ -82,23 +83,13 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
         </div>
       )}
 
-      <div className="absolute top-3 right-3 flex flex-col gap-2">
-        <button
-          type="button"
-          onClick={() => handleZoomChange(1)}
-          disabled={!canZoomIn}
-          className="rounded-xl border border-white/20 bg-slate-900/70 px-2 py-1 text-sm font-semibold text-white/90 shadow disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          +
-        </button>
-        <button
-          type="button"
-          onClick={() => handleZoomChange(-1)}
-          disabled={!canZoomOut}
-          className="rounded-xl border border-white/20 bg-slate-900/70 px-2 py-1 text-sm font-semibold text-white/90 shadow disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          –
-        </button>
+      <div className="absolute top-3 right-3">
+        <ZoomControls
+          onZoomIn={() => handleZoomChange(1)}
+          onZoomOut={() => handleZoomChange(-1)}
+          canZoomIn={canZoomIn}
+          canZoomOut={canZoomOut}
+        />
       </div>
 
       {label && (

@@ -24,7 +24,6 @@ export function LocationDetails({
           latitude={coordinates.latitude}
           longitude={coordinates.longitude}
           altitude={coordinates.altitude}
-          label="Photo Location"
         />
 
         <dl className="grid grid-cols-3 gap-3 text-xs text-white/70">
