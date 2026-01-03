@@ -1,1 +1,28 @@
-{"id":"MJXX6FDDBW3FZ","name":"DSC02497","size":1199480,"btime":1767421568116,"mtime":1767421568117,"ext":"jpg","tags":[],"folders":[],"isDeleted":false,"url":"","annotation":"","modificationTime":1767421585488,"height":5522,"width":3681,"lastModified":1767421585787,"palettes":[{"color":[80,161,193],"ratio":54},{"color":[43,48,42],"ratio":20},{"color":[143,171,182],"ratio":9},{"color":[11,134,181],"ratio":6},{"color":[77,101,109],"ratio":3.52},{"color":[192,199,200],"ratio":2.39},{"color":[106,179,212],"ratio":1.46},{"color":[121,188,204],"ratio":1.35},{"color":[35,74,93],"ratio":0.39}]}
+{
+  "id": "MJXX6FDDBW3FZ",
+  "name": "DSC02497",
+  "size": 1199480,
+  "btime": 1767421568116,
+  "mtime": 1767421568117,
+  "ext": "jpg",
+  "tags": [],
+  "folders": [],
+  "isDeleted": false,
+  "url": "",
+  "annotation": "",
+  "modificationTime": 1767421585488,
+  "height": 5522,
+  "width": 3681,
+  "lastModified": 1767421585787,
+  "palettes": [
+    { "color": [80, 161, 193], "ratio": 54 },
+    { "color": [43, 48, 42], "ratio": 20 },
+    { "color": [143, 171, 182], "ratio": 9 },
+    { "color": [11, 134, 181], "ratio": 6 },
+    { "color": [77, 101, 109], "ratio": 3.52 },
+    { "color": [192, 199, 200], "ratio": 2.39 },
+    { "color": [106, 179, 212], "ratio": 1.46 },
+    { "color": [121, 188, 204], "ratio": 1.35 },
+    { "color": [35, 74, 93], "ratio": 0.39 }
+  ]
+}
