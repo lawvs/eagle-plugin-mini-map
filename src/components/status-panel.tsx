@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { LoadState } from "../types/load-state";
+import type { LoadState } from "../types";
 
 interface StatusPanelProps {
   state: LoadState;

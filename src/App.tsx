@@ -3,9 +3,24 @@ import { LocationDetails } from "./components/location-details";
 import { StatusPanel } from "./components/status-panel";
 import { eagle } from "./eagle";
 import { IN_EAGLE } from "./eagle/env";
-import type { EagleTheme } from "./eagle/types";
-import { resolveItemLocation, type Coordinates } from "./lib/exif";
-import type { LoadState } from "./types/load-state";
+import type { EagleTheme, Item } from "./eagle/types";
+import { resolveImageLocation } from "./lib/location";
+import type { Coordinates, LoadState } from "./types";
+
+async function fetchBinary(url: string): Promise<ArrayBuffer> {
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch source (${response.status})`);
+  }
+
+  return response.arrayBuffer();
+}
+
+const resolveItemLocation = async (item: Item): Promise<Coordinates | null> => {
+  const filePath = item.fileURL;
+  const buffer = await fetchBinary(filePath);
+  return resolveImageLocation(buffer);
+};
 
 function App() {
   const [theme, setTheme] = useState<EagleTheme>("LIGHT");
@@ -27,7 +42,7 @@ function App() {
         return;
       }
 
-      const { location } = await resolveItemLocation(item);
+      const location = await resolveItemLocation(item);
 
       if (!location) {
         setCoordinates(null);

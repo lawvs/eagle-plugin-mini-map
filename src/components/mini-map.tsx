@@ -1,7 +1,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useCallback, useEffect, useState } from "react";
 import Map from "react-map-gl/maplibre";
-import type { Coordinates } from "../lib/exif";
+import type { Coordinates } from "../types";
 
 interface MiniMapProps extends Coordinates {
   label?: string;
@@ -33,9 +33,12 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
     return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
   }, []);
 
-  const handleZoomChange = useCallback((delta: number) => {
-    setViewState((prev) => ({ ...prev, zoom: clampZoom(prev.zoom + delta) }));
-  }, [clampZoom]);
+  const handleZoomChange = useCallback(
+    (delta: number) => {
+      setViewState((prev) => ({ ...prev, zoom: clampZoom(prev.zoom + delta) }));
+    },
+    [clampZoom],
+  );
 
   const canZoomIn = viewState.zoom < MAX_ZOOM;
   const canZoomOut = viewState.zoom > MIN_ZOOM;
@@ -46,7 +49,16 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
         key={`${latitude}-${longitude}`}
         mapLib={import("maplibre-gl")}
         reuseMaps
-        viewState={viewState}
+        initialViewState={{
+          latitude: viewState.latitude,
+          longitude: viewState.longitude,
+          zoom: viewState.zoom,
+          bearing: 0,
+          pitch: 0,
+        }}
+        latitude={viewState.latitude}
+        longitude={viewState.longitude}
+        zoom={viewState.zoom}
         minZoom={MIN_ZOOM}
         maxZoom={MAX_ZOOM}
         style={{ width: "100%", height: "100%" }}
@@ -70,7 +82,7 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
         </div>
       )}
 
-      <div className="absolute right-3 top-3 flex flex-col gap-2">
+      <div className="absolute top-3 right-3 flex flex-col gap-2">
         <button
           type="button"
           onClick={() => handleZoomChange(1)}

@@ -1,4 +1,4 @@
-import type { Coordinates } from "../lib/exif";
+import type { Coordinates } from "../types";
 import { MiniMap } from "./mini-map";
 
 interface LocationDetailsProps {

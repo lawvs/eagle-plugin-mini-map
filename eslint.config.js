@@ -54,4 +54,13 @@ export default defineConfig(
       ],
     },
   },
+  {
+    files: ["**/*.test.{ts,tsx}", "tests/**/*.test.{ts,tsx}"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.vitest,
+      },
+    },
+  },
 );
