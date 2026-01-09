@@ -3,8 +3,7 @@ export type LoadState =
   | "ready"
   | "no-selection"
   | "no-gps"
-  | "error"
-  | "window-too-small";
+  | "error";
 
 export interface Coordinates {
   latitude: number;

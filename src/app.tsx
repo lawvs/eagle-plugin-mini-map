@@ -3,13 +3,9 @@ import { LocationDetails } from "./components/location-details";
 import { StatusPanel } from "./components/status-panel";
 import { IN_EAGLE } from "./eagle/env";
 import { useEagleSelection } from "./hooks/use-eagle-selection";
-import { useWindowSize } from "./hooks/use-window-size";
-
-const MIN_WIDTH_FOR_DETAILS = 350;
 
 function App() {
   const { state, coordinates, errorMessage } = useEagleSelection();
-  const { width } = useWindowSize();
 
   const openMapUrl = useMemo(() => {
     if (!coordinates) {
@@ -20,19 +16,28 @@ function App() {
     return `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}&zoom=16`;
   }, [coordinates]);
 
-  const shouldShowDetails =
-    state === "ready" && coordinates && width >= MIN_WIDTH_FOR_DETAILS;
-  const isWindowTooSmall =
-    state === "ready" && coordinates && width < MIN_WIDTH_FOR_DETAILS;
-
   return (
     <div
-      className={`flex h-full flex-col gap-3 p-3 text-white/90 ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
+      className={`@container flex h-full flex-col gap-3 p-3 text-white/90 ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
     >
-      {shouldShowDetails ? (
-        <LocationDetails coordinates={coordinates} openMapUrl={openMapUrl} />
-      ) : isWindowTooSmall ? (
-        <StatusPanel state="window-too-small" errorMessage="" />
+      {state === "ready" && coordinates ? (
+        <>
+          <div className="@[350px]:hidden">
+            <section className="rounded-2xl border border-white/10 bg-slate-900/60 p-4 shadow-xl shadow-black/40">
+              <div className="min-h-45x flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/5 text-center">
+                <p className="text-sm font-medium text-white/70">
+                  Expand the window to view location details.
+                </p>
+              </div>
+            </section>
+          </div>
+          <div className="hidden @[350px]:block">
+            <LocationDetails
+              coordinates={coordinates}
+              openMapUrl={openMapUrl}
+            />
+          </div>
+        </>
       ) : (
         <StatusPanel state={state} errorMessage={errorMessage} />
       )}
