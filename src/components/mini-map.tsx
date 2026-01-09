@@ -50,7 +50,7 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
   const canZoomOut = viewState.zoom > MIN_ZOOM;
 
   return (
-    <div className="relative h-48 w-full overflow-hidden rounded-2xl border border-white/10 bg-black/10">
+    <div className="relative h-48 w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 transition-colors dark:border-white/10 dark:bg-black/10">
       <Map
         key={`${latitude}-${longitude}`}
         mapLib={import("maplibre-gl")}
@@ -83,7 +83,7 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
       </div>
 
       {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/40 text-xs text-white/80 backdrop-blur">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/80 text-xs text-slate-600 backdrop-blur transition-colors dark:bg-slate-900/40 dark:text-white/80">
           Loading map...
         </div>
       )}
@@ -98,7 +98,7 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
       </div>
 
       {label && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/80 to-transparent p-2 text-center text-[11px] tracking-wide text-white/75 uppercase">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/80 to-transparent p-2 text-center text-[11px] tracking-wide text-white/75 uppercase transition-colors dark:from-slate-950/80">
           {label}
         </div>
       )}

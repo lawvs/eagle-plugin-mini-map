@@ -3,9 +3,11 @@ import { LocationDetails } from "./components/location-details";
 import { StatusPanel } from "./components/status-panel";
 import { IN_EAGLE } from "./eagle/env";
 import { useEagleSelection } from "./hooks/use-eagle-selection";
+import { useEagleTheme } from "./hooks/use-eagle-theme";
 
 function App() {
   const { state, coordinates, errorMessage } = useEagleSelection();
+  const theme = useEagleTheme();
 
   const openMapUrl = useMemo(() => {
     if (!coordinates) {
@@ -16,9 +18,15 @@ function App() {
     return `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}&zoom=16`;
   }, [coordinates]);
 
+  const isLightTheme = theme === "light" || theme === "lightgray";
+
   return (
     <div
-      className={`flex h-full flex-col gap-3 p-3 text-white/90 ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
+      className={`flex h-full flex-col gap-3 p-3 transition-colors ${
+        isLightTheme
+          ? "bg-white text-slate-900"
+          : "bg-slate-950 text-white/90"
+      } ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
     >
       {state === "ready" && coordinates ? (
         <LocationDetails coordinates={coordinates} openMapUrl={openMapUrl} />

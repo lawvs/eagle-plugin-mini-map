@@ -42,6 +42,8 @@ const emitTheme = (theme: EagleTheme) => {
 export const mockEagle: Eagle = {
   app: {
     theme: "LIGHT",
+    platform: "darwin",
+    isDarkColors: () => false,
   },
   item: {
     getSelected: async () => Promise.resolve([mockItem]),

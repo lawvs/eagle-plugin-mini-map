@@ -18,7 +18,7 @@ export function LocationDetails({
       : "Unknown";
 
   return (
-    <section className="@container rounded-2xl border border-white/10 bg-slate-900/60 p-4 shadow-xl shadow-black/40">
+    <section className="@container rounded-2xl border border-slate-200 bg-white/60 p-4 shadow-xl shadow-black/10 transition-colors dark:border-white/10 dark:bg-slate-900/60 dark:shadow-black/40">
       <div className="space-y-4">
         <MiniMap
           latitude={coordinates.latitude}
@@ -26,28 +26,28 @@ export function LocationDetails({
           altitude={coordinates.altitude}
         />
 
-        <dl className="hidden grid-cols-3 gap-3 text-xs text-white/70 @[350px]:grid">
-          <div className="rounded-xl border border-white/5 bg-white/5 p-3">
-            <dt className="text-[11px] tracking-wide text-white/50 uppercase">
+        <dl className="hidden grid-cols-3 gap-3 text-xs text-slate-600 transition-colors dark:text-white/70 @[350px]:grid">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 transition-colors dark:border-white/5 dark:bg-white/5">
+            <dt className="text-[11px] tracking-wide text-slate-500 uppercase transition-colors dark:text-white/50">
               Latitude
             </dt>
-            <dd className="text-base font-semibold text-white">
+            <dd className="text-base font-semibold text-slate-900 transition-colors dark:text-white">
               {formattedLat}°
             </dd>
           </div>
-          <div className="rounded-xl border border-white/5 bg-white/5 p-3">
-            <dt className="text-[11px] tracking-wide text-white/50 uppercase">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 transition-colors dark:border-white/5 dark:bg-white/5">
+            <dt className="text-[11px] tracking-wide text-slate-500 uppercase transition-colors dark:text-white/50">
               Longitude
             </dt>
-            <dd className="text-base font-semibold text-white">
+            <dd className="text-base font-semibold text-slate-900 transition-colors dark:text-white">
               {formattedLng}°
             </dd>
           </div>
-          <div className="rounded-xl border border-white/5 bg-white/5 p-3">
-            <dt className="text-[11px] tracking-wide text-white/50 uppercase">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 transition-colors dark:border-white/5 dark:bg-white/5">
+            <dt className="text-[11px] tracking-wide text-slate-500 uppercase transition-colors dark:text-white/50">
               Altitude
             </dt>
-            <dd className="text-base font-semibold text-white">
+            <dd className="text-base font-semibold text-slate-900 transition-colors dark:text-white">
               {formattedAlt}
             </dd>
           </div>
@@ -58,7 +58,7 @@ export function LocationDetails({
             href={openMapUrl}
             target="_blank"
             rel="noreferrer"
-            className="hidden items-center gap-2 text-xs font-semibold text-sky-300 transition hover:text-sky-200 @[350px]:inline-flex"
+            className="hidden items-center gap-2 text-xs font-semibold text-sky-600 transition-colors hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200 @[350px]:inline-flex"
           >
             View on OpenStreetMap
             <span aria-hidden>&rarr;</span>
