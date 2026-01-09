@@ -1,6 +1,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useCallback, useEffect, useState } from "react";
 import Map from "react-map-gl/maplibre";
+import { useIsDarkTheme } from "../hooks/use-is-dark-theme";
 import type { Coordinates } from "../types";
 import { ZoomControls } from "./zoom-controls";
 
@@ -8,13 +9,17 @@ interface MiniMapProps extends Coordinates {
   label?: string;
 }
 
-const MAP_STYLE_URL =
+const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+const MAP_STYLE_DARK =
+  "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 const MIN_ZOOM = 2;
 const MAX_ZOOM = 18;
 const DEFAULT_ZOOM = 13;
 
 export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
+  const isDark = useIsDarkTheme();
+  const mapStyle = isDark ? MAP_STYLE_DARK : MAP_STYLE_LIGHT;
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewState, setViewState] = useState({
     latitude,
@@ -50,7 +55,11 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
   const canZoomOut = viewState.zoom > MIN_ZOOM;
 
   return (
-    <div className="relative h-48 w-full overflow-hidden rounded-2xl border border-white/10 bg-black/10">
+    <div
+      className={`relative h-48 w-full overflow-hidden rounded-xl border transition-colors ${
+        isDark ? "border-white/10 bg-black/10" : "border-slate-200 bg-slate-100"
+      }`}
+    >
       <Map
         key={`${latitude}-${longitude}`}
         mapLib={import("maplibre-gl")}
@@ -68,7 +77,7 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
         minZoom={MIN_ZOOM}
         maxZoom={MAX_ZOOM}
         style={{ width: "100%", height: "100%" }}
-        mapStyle={MAP_STYLE_URL}
+        mapStyle={mapStyle}
         attributionControl={false}
         interactive={false}
         onLoad={handleLoad}
@@ -83,7 +92,13 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
       </div>
 
       {!isLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/40 text-xs text-white/80 backdrop-blur">
+        <div
+          className={`absolute inset-0 flex items-center justify-center text-xs backdrop-blur transition-colors ${
+            isDark
+              ? "bg-slate-900/40 text-white/80"
+              : "bg-white/80 text-slate-600"
+          }`}
+        >
           Loading map...
         </div>
       )}
@@ -98,7 +113,13 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
       </div>
 
       {label && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/80 to-transparent p-2 text-center text-[11px] tracking-wide text-white/75 uppercase">
+        <div
+          className={`pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t p-2 text-center text-[11px] tracking-wide uppercase transition-colors ${
+            isDark
+              ? "from-slate-950/80 text-white/75"
+              : "from-white/80 text-slate-700"
+          }`}
+        >
           {label}
         </div>
       )}

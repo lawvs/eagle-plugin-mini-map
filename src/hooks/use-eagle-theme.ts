@@ -1,36 +1,73 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { eagle } from "../eagle";
 import { IN_EAGLE } from "../eagle/env";
 import type { EagleTheme } from "../eagle/types";
 
-export function useEagleTheme() {
-  const [theme, setTheme] = useState<EagleTheme>("LIGHT");
+type ThemeName = "light" | "lightgray" | "gray" | "dark" | "blue" | "purple";
 
-  useEffect(() => {
-    let mounted = true;
+const DEFAULT_LIGHT_THEME: ThemeName = "light";
+const DEFAULT_DARK_THEME: ThemeName = "gray";
 
-    const applyTheme = (value: EagleTheme) => {
-      if (!mounted) return;
-      setTheme(value);
-    };
+const THEME_SUPPORT: Record<EagleTheme, ThemeName | "auto"> = {
+  AUTO: "auto",
+  LIGHT: DEFAULT_LIGHT_THEME,
+  LIGHTGRAY: "lightgray",
+  GRAY: DEFAULT_DARK_THEME,
+  DARK: "dark",
+  BLUE: "blue",
+  PURPLE: "purple",
+};
 
-    if (IN_EAGLE) {
-      eagle.onPluginCreate(() => {
-        applyTheme(eagle.app.theme);
-      });
-      eagle.onThemeChanged(applyTheme);
-    } else {
-      applyTheme(eagle.app.theme);
-    }
+function resolveTheme(theme: EagleTheme): ThemeName {
+  const themeName = THEME_SUPPORT[theme];
+  if (themeName === "auto") {
+    return eagle.app.isDarkColors() ? DEFAULT_DARK_THEME : DEFAULT_LIGHT_THEME;
+  }
+  return themeName;
+}
 
-    return () => {
-      mounted = false;
-    };
-  }, []);
+// Initialize with actual theme if available, otherwise use default
+let currentTheme: ThemeName = IN_EAGLE
+  ? resolveTheme(eagle.app.theme)
+  : DEFAULT_LIGHT_THEME;
+const listeners = new Set<() => void>();
 
-  useEffect(() => {
-    document.body.setAttribute("data-theme", theme.toLowerCase());
-  }, [theme]);
+function updateTheme(eagleTheme: EagleTheme) {
+  const htmlEl = document.querySelector("html");
+  if (!htmlEl) return;
 
-  return theme;
+  const themeName = resolveTheme(eagleTheme);
+  currentTheme = themeName;
+
+  htmlEl.classList.add("no-transition");
+  htmlEl.setAttribute("theme", themeName);
+  htmlEl.setAttribute("platform", eagle.app.platform);
+  htmlEl.classList.remove("no-transition");
+
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(callback: () => void) {
+  listeners.add(callback);
+  return () => {
+    listeners.delete(callback);
+  };
+}
+
+function getSnapshot() {
+  return currentTheme;
+}
+
+// Initialize theme on module load
+if (IN_EAGLE) {
+  eagle.onPluginCreate(() => {
+    updateTheme(eagle.app.theme);
+  });
+  eagle.onThemeChanged(updateTheme);
+} else {
+  updateTheme(eagle.app.theme);
+}
+
+export function useEagleTheme(): ThemeName {
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

@@ -64,7 +64,14 @@ interface Item {
   readonly metadataFilePath: string;
 }
 
-type EagleTheme = "LIGHT" | "LIGHTGRAY" | "GRAY" | "DARK" | "BLUE" | "PURPLE";
+type EagleTheme =
+  | "AUTO"
+  | "LIGHT"
+  | "LIGHTGRAY"
+  | "GRAY"
+  | "DARK"
+  | "BLUE"
+  | "PURPLE";
 
 type Manifest = typeof manifest;
 
@@ -88,6 +95,8 @@ interface EagleEvent {
 interface Eagle extends EagleEvent {
   app: {
     theme: EagleTheme;
+    platform: string;
+    isDarkColors: () => boolean;
   };
   item: {
     getSelected: () => Promise<Item[]>;

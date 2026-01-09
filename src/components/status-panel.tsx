@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useIsDarkTheme } from "../hooks/use-is-dark-theme";
 import type { LoadState } from "../types";
 
 interface StatusPanelProps {
@@ -7,6 +8,7 @@ interface StatusPanelProps {
 }
 
 export function StatusPanel({ state, errorMessage }: StatusPanelProps) {
+  const isDark = useIsDarkTheme();
   const copy = useMemo(() => {
     switch (state) {
       case "loading":
@@ -22,12 +24,31 @@ export function StatusPanel({ state, errorMessage }: StatusPanelProps) {
     }
   }, [state, errorMessage]);
 
-  const tone = state === "error" ? "text-rose-200" : "text-white/70";
+  const tone =
+    state === "error"
+      ? isDark
+        ? "text-rose-200"
+        : "text-rose-600"
+      : isDark
+        ? "text-white/70"
+        : "text-slate-600";
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-slate-900/60 p-4 shadow-xl shadow-black/40">
-      <div className="min-h-45x flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/5 text-center">
-        <p className={`text-sm font-medium ${tone}`}>{copy}</p>
+    <section
+      className={`rounded-xl border p-4 shadow-xl transition-colors ${
+        isDark
+          ? "border-white/10 bg-slate-900/60 shadow-black/40"
+          : "border-slate-200 bg-white/60 shadow-black/10"
+      }`}
+    >
+      <div
+        className={`min-h-45x flex flex-col items-center justify-center rounded-2xl border border-dashed text-center transition-colors ${
+          isDark ? "border-white/10 bg-white/5" : "border-slate-300 bg-slate-50"
+        }`}
+      >
+        <p className={`text-sm font-medium transition-colors ${tone}`}>
+          {copy}
+        </p>
       </div>
     </section>
   );

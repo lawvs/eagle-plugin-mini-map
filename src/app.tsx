@@ -3,9 +3,12 @@ import { LocationDetails } from "./components/location-details";
 import { StatusPanel } from "./components/status-panel";
 import { IN_EAGLE } from "./eagle/env";
 import { useEagleSelection } from "./hooks/use-eagle-selection";
+import { useEagleTheme } from "./hooks/use-eagle-theme";
 
 function App() {
   const { state, coordinates, errorMessage } = useEagleSelection();
+  const theme = useEagleTheme();
+  const isLightTheme = theme === "light" || theme === "lightgray";
 
   const openMapUrl = useMemo(() => {
     if (!coordinates) {
@@ -18,7 +21,9 @@ function App() {
 
   return (
     <div
-      className={`flex h-full flex-col gap-3 p-3 text-white/90 ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
+      className={`flex h-full flex-col gap-3 p-3 transition-colors ${
+        isLightTheme ? "text-slate-900" : "text-white/90"
+      } ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
     >
       {state === "ready" && coordinates ? (
         <LocationDetails coordinates={coordinates} openMapUrl={openMapUrl} />
