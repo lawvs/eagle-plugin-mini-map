@@ -1,6 +1,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useCallback, useEffect, useState } from "react";
 import Map from "react-map-gl/maplibre";
+import { useEagleTheme } from "../hooks/use-eagle-theme";
 import type { Coordinates } from "../types";
 import { ZoomControls } from "./zoom-controls";
 
@@ -8,13 +9,20 @@ interface MiniMapProps extends Coordinates {
   label?: string;
 }
 
-const MAP_STYLE_URL =
+const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+const MAP_STYLE_DARK =
+  "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 const MIN_ZOOM = 2;
 const MAX_ZOOM = 18;
 const DEFAULT_ZOOM = 13;
 
 export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
+  const theme = useEagleTheme();
+  const mapStyle =
+    theme === "light" || theme === "lightgray"
+      ? MAP_STYLE_LIGHT
+      : MAP_STYLE_DARK;
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewState, setViewState] = useState({
     latitude,
@@ -68,7 +76,7 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
         minZoom={MIN_ZOOM}
         maxZoom={MAX_ZOOM}
         style={{ width: "100%", height: "100%" }}
-        mapStyle={MAP_STYLE_URL}
+        mapStyle={mapStyle}
         attributionControl={false}
         interactive={false}
         onLoad={handleLoad}
