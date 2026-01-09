@@ -23,9 +23,7 @@ function App() {
   return (
     <div
       className={`flex h-full flex-col gap-3 p-3 transition-colors ${
-        isLightTheme
-          ? "bg-white text-slate-900"
-          : "bg-slate-950 text-white/90"
+        isLightTheme ? "text-slate-900" : "text-white/90"
       } ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
     >
       {state === "ready" && coordinates ? (
