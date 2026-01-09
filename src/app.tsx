@@ -20,13 +20,18 @@ function App() {
     return `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}&zoom=16`;
   }, [coordinates]);
 
+  const shouldShowDetails =
+    state === "ready" && coordinates && width >= MIN_WIDTH_FOR_DETAILS;
+  const isWindowTooSmall =
+    state === "ready" && coordinates && width < MIN_WIDTH_FOR_DETAILS;
+
   return (
     <div
       className={`flex h-full flex-col gap-3 p-3 text-white/90 ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
     >
-      {state === "ready" && coordinates && width >= MIN_WIDTH_FOR_DETAILS ? (
+      {shouldShowDetails ? (
         <LocationDetails coordinates={coordinates} openMapUrl={openMapUrl} />
-      ) : state === "ready" && coordinates && width < MIN_WIDTH_FOR_DETAILS ? (
+      ) : isWindowTooSmall ? (
         <StatusPanel state="window-too-small" errorMessage="" />
       ) : (
         <StatusPanel state={state} errorMessage={errorMessage} />
