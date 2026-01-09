@@ -26,7 +26,10 @@ function resolveTheme(theme: EagleTheme): ThemeName {
   return themeName;
 }
 
-let currentTheme: ThemeName = DEFAULT_LIGHT_THEME;
+// Initialize with actual theme if available, otherwise use default
+let currentTheme: ThemeName = IN_EAGLE
+  ? resolveTheme(eagle.app.theme)
+  : DEFAULT_LIGHT_THEME;
 const listeners = new Set<() => void>();
 
 function updateTheme(eagleTheme: EagleTheme) {
