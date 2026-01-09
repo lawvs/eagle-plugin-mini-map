@@ -15,6 +15,8 @@ export function StatusPanel({ state, errorMessage }: StatusPanelProps) {
         return "Select an image in Eagle to view its location.";
       case "no-gps":
         return "No GPS data found.";
+      case "window-too-small":
+        return "Expand the window to view location details.";
       case "error":
         return errorMessage || "Unable to read metadata.";
       default:
