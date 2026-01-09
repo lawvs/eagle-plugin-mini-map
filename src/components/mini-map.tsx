@@ -98,7 +98,7 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
       </div>
 
       {label && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-slate-950/80 to-transparent p-2 text-center text-[11px] tracking-wide text-white/75 uppercase transition-colors dark:from-slate-950/80">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-white/80 p-2 text-center text-[11px] tracking-wide text-slate-700 uppercase transition-colors dark:from-slate-950/80 dark:text-white/75">
           {label}
         </div>
       )}

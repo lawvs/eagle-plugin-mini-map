@@ -5,11 +5,14 @@ import type { EagleTheme } from "../eagle/types";
 
 type ThemeName = "light" | "lightgray" | "gray" | "dark" | "blue" | "purple";
 
+const DEFAULT_LIGHT_THEME: ThemeName = "light";
+const DEFAULT_DARK_THEME: ThemeName = "gray";
+
 const THEME_SUPPORT: Record<EagleTheme, ThemeName | "auto"> = {
   AUTO: "auto",
-  LIGHT: "light",
+  LIGHT: DEFAULT_LIGHT_THEME,
   LIGHTGRAY: "lightgray",
-  GRAY: "gray",
+  GRAY: DEFAULT_DARK_THEME,
   DARK: "dark",
   BLUE: "blue",
   PURPLE: "purple",
@@ -18,12 +21,12 @@ const THEME_SUPPORT: Record<EagleTheme, ThemeName | "auto"> = {
 function resolveTheme(theme: EagleTheme): ThemeName {
   const themeName = THEME_SUPPORT[theme];
   if (themeName === "auto") {
-    return eagle.app.isDarkColors() ? "gray" : "light";
+    return eagle.app.isDarkColors() ? DEFAULT_DARK_THEME : DEFAULT_LIGHT_THEME;
   }
   return themeName;
 }
 
-let currentTheme: ThemeName = "light";
+let currentTheme: ThemeName = DEFAULT_LIGHT_THEME;
 const listeners = new Set<() => void>();
 
 function updateTheme(eagleTheme: EagleTheme) {
