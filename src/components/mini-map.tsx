@@ -58,7 +58,7 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
   const canZoomOut = viewState.zoom > MIN_ZOOM;
 
   return (
-    <div className="relative h-48 w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 transition-colors dark:border-white/10 dark:bg-black/10">
+    <div className="relative h-48 w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-100 transition-colors dark:border-white/10 dark:bg-black/10">
       <Map
         key={`${latitude}-${longitude}`}
         mapLib={import("maplibre-gl")}
