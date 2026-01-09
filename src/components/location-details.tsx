@@ -18,7 +18,7 @@ export function LocationDetails({
       : "Unknown";
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-slate-900/60 p-4 shadow-xl shadow-black/40">
+    <section className="@container rounded-2xl border border-white/10 bg-slate-900/60 p-4 shadow-xl shadow-black/40">
       <div className="space-y-4">
         <MiniMap
           latitude={coordinates.latitude}
@@ -26,7 +26,7 @@ export function LocationDetails({
           altitude={coordinates.altitude}
         />
 
-        <dl className="grid grid-cols-3 gap-3 text-xs text-white/70">
+        <dl className="hidden grid-cols-3 gap-3 text-xs text-white/70 @[350px]:grid">
           <div className="rounded-xl border border-white/5 bg-white/5 p-3">
             <dt className="text-[11px] tracking-wide text-white/50 uppercase">
               Latitude
@@ -58,7 +58,7 @@ export function LocationDetails({
             href={openMapUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-sky-300 transition hover:text-sky-200"
+            className="hidden items-center gap-2 text-xs font-semibold text-sky-300 transition hover:text-sky-200 @[350px]:inline-flex"
           >
             View on OpenStreetMap
             <span aria-hidden>&rarr;</span>
