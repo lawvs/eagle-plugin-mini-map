@@ -1,9 +1,3 @@
 @import "tailwindcss";
 
-@theme {
-  --color-*: initial;
-  --font-*: initial;
-}
-
-@variant dark (&:is([theme="dark"], [theme="gray"], [theme="blue"], [theme="purple"], [theme="lightgray"] *)) {
-}
+@custom-variant dark (html[theme="dark"] &, html[theme="gray"] &, html[theme="blue"] &, html[theme="purple"] &, html[theme="lightgray"] &);
