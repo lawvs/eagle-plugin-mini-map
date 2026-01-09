@@ -18,26 +18,10 @@ function App() {
 
   return (
     <div
-      className={`@container flex h-full flex-col gap-3 p-3 text-white/90 ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
+      className={`flex h-full flex-col gap-3 p-3 text-white/90 ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
     >
       {state === "ready" && coordinates ? (
-        <>
-          <div className="@[350px]:hidden">
-            <section className="rounded-2xl border border-white/10 bg-slate-900/60 p-4 shadow-xl shadow-black/40">
-              <div className="min-h-45x flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/5 text-center">
-                <p className="text-sm font-medium text-white/70">
-                  Expand the window to view location details.
-                </p>
-              </div>
-            </section>
-          </div>
-          <div className="hidden @[350px]:block">
-            <LocationDetails
-              coordinates={coordinates}
-              openMapUrl={openMapUrl}
-            />
-          </div>
-        </>
+        <LocationDetails coordinates={coordinates} openMapUrl={openMapUrl} />
       ) : (
         <StatusPanel state={state} errorMessage={errorMessage} />
       )}
