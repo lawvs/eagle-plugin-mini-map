@@ -8,6 +8,7 @@ import { useEagleTheme } from "./hooks/use-eagle-theme";
 function App() {
   const { state, coordinates, errorMessage } = useEagleSelection();
   const theme = useEagleTheme();
+  const isLightTheme = theme === "light" || theme === "lightgray";
 
   const openMapUrl = useMemo(() => {
     if (!coordinates) {
@@ -17,8 +18,6 @@ function App() {
     const { latitude, longitude } = coordinates;
     return `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}&zoom=16`;
   }, [coordinates]);
-
-  const isLightTheme = theme === "light" || theme === "lightgray";
 
   return (
     <div

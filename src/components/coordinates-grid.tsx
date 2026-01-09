@@ -1,3 +1,4 @@
+import { useIsDarkTheme } from "../hooks/use-is-dark-theme";
 import type { Coordinates } from "../types";
 
 interface CoordinatesGridProps {
@@ -5,6 +6,7 @@ interface CoordinatesGridProps {
 }
 
 export function CoordinatesGrid({ coordinates }: CoordinatesGridProps) {
+  const isDark = useIsDarkTheme();
   const formattedLat = coordinates.latitude.toFixed(3);
   const formattedLng = coordinates.longitude.toFixed(3);
   const formattedAlt =
@@ -13,28 +15,68 @@ export function CoordinatesGrid({ coordinates }: CoordinatesGridProps) {
       : "Unknown";
 
   return (
-    <dl className="hidden grid-cols-3 gap-3 text-xs text-slate-600 transition-colors @[350px]:grid dark:text-white/70">
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 transition-colors dark:border-white/5 dark:bg-white/5">
-        <dt className="text-[11px] tracking-wide text-slate-500 uppercase transition-colors dark:text-white/50">
+    <dl
+      className={`hidden grid-cols-3 gap-3 text-xs transition-colors @[350px]:grid ${
+        isDark ? "text-white/70" : "text-slate-600"
+      }`}
+    >
+      <div
+        className={`rounded-xl border p-3 transition-colors ${
+          isDark ? "border-white/5 bg-white/5" : "border-slate-200 bg-slate-50"
+        }`}
+      >
+        <dt
+          className={`text-[11px] tracking-wide uppercase transition-colors ${
+            isDark ? "text-white/50" : "text-slate-500"
+          }`}
+        >
           Latitude
         </dt>
-        <dd className="text-base font-semibold text-slate-900 transition-colors dark:text-white">
+        <dd
+          className={`text-base font-semibold transition-colors ${
+            isDark ? "text-white" : "text-slate-900"
+          }`}
+        >
           {formattedLat}°
         </dd>
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 transition-colors dark:border-white/5 dark:bg-white/5">
-        <dt className="text-[11px] tracking-wide text-slate-500 uppercase transition-colors dark:text-white/50">
+      <div
+        className={`rounded-xl border p-3 transition-colors ${
+          isDark ? "border-white/5 bg-white/5" : "border-slate-200 bg-slate-50"
+        }`}
+      >
+        <dt
+          className={`text-[11px] tracking-wide uppercase transition-colors ${
+            isDark ? "text-white/50" : "text-slate-500"
+          }`}
+        >
           Longitude
         </dt>
-        <dd className="text-base font-semibold text-slate-900 transition-colors dark:text-white">
+        <dd
+          className={`text-base font-semibold transition-colors ${
+            isDark ? "text-white" : "text-slate-900"
+          }`}
+        >
           {formattedLng}°
         </dd>
       </div>
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 transition-colors dark:border-white/5 dark:bg-white/5">
-        <dt className="text-[11px] tracking-wide text-slate-500 uppercase transition-colors dark:text-white/50">
+      <div
+        className={`rounded-xl border p-3 transition-colors ${
+          isDark ? "border-white/5 bg-white/5" : "border-slate-200 bg-slate-50"
+        }`}
+      >
+        <dt
+          className={`text-[11px] tracking-wide uppercase transition-colors ${
+            isDark ? "text-white/50" : "text-slate-500"
+          }`}
+        >
           Altitude
         </dt>
-        <dd className="text-base font-semibold text-slate-900 transition-colors dark:text-white">
+        <dd
+          className={`text-base font-semibold transition-colors ${
+            isDark ? "text-white" : "text-slate-900"
+          }`}
+        >
           {formattedAlt}
         </dd>
       </div>
