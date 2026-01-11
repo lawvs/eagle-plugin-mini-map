@@ -5,7 +5,7 @@
   <h3>Eagle Plugin Mini Map</h3>
 </div>
 
-A plugin to visualize image locations on a map in Eagle App.
+A plugin to visualize image locations on a map in [Eagle](https://eagle.cool/) App.
 
 <img width="374" height="412" alt="Image" src="https://github.com/user-attachments/assets/9786bfd2-66d2-482a-9b9a-7be5bb7b5f1c" />
 
