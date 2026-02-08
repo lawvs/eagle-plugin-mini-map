@@ -1,13 +1,16 @@
 import manifest from "../../public/manifest.json";
 import type { Eagle, EagleTheme, Item } from "./types";
 
+// Use BASE_URL to properly handle GitHub Pages deployment
+const fixtureUrl = `${import.meta.env.BASE_URL}tests/fixtures/MJXX6FDDBW3FZ.info/DSC02497.jpg`;
+
 const mockItem: Item = {
   id: "mock-item",
   name: "Test Image",
   ext: "jpg",
   width: 3681,
   height: 5522,
-  url: "/tests/fixtures/MJXX6FDDBW3FZ.info/DSC02497.jpg",
+  url: fixtureUrl,
   isDeleted: false,
   annotation: "Sky tree",
   tags: ["travel"],
@@ -19,10 +22,10 @@ const mockItem: Item = {
   modifiedAt: Date.now(),
   noThumbnail: false,
   noPreview: false,
-  filePath: "/tests/fixtures/MJXX6FDDBW3FZ.info/DSC02497.jpg",
-  fileURL: "/tests/fixtures/MJXX6FDDBW3FZ.info/DSC02497.jpg",
-  thumbnailPath: "/tests/fixtures/MJXX6FDDBW3FZ.info/DSC02497.jpg",
-  thumbnailURL: "/tests/fixtures/MJXX6FDDBW3FZ.info/DSC02497.jpg",
+  filePath: fixtureUrl,
+  fileURL: fixtureUrl,
+  thumbnailPath: fixtureUrl,
+  thumbnailURL: fixtureUrl,
   metadataFilePath: "",
   save: async () => Promise.resolve(true),
   moveToTrash: async () => Promise.resolve(true),
