@@ -11,7 +11,7 @@
     "dev": "vite",
     "dev:eagle": "vite build --watch",
     "type-check": "tsc --noEmit",
-    "build": "tsc -b && vite build",
+    "build": "cp -r tests public/tests && tsc -b && vite build",
     "test": "vitest run",
     "lint": "eslint --fix .",
     "lint:check": "eslint .",
