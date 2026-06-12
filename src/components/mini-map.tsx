@@ -1,5 +1,5 @@
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import Map from "react-map-gl/maplibre";
 import { useIsDarkTheme } from "../hooks/use-is-dark-theme";
 import type { Coordinates } from "../types";
@@ -21,11 +21,7 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
   const isDark = useIsDarkTheme();
   const mapStyle = isDark ? MAP_STYLE_DARK : MAP_STYLE_LIGHT;
   const [isLoaded, setIsLoaded] = useState(false);
-  const [viewState, setViewState] = useState({
-    latitude,
-    longitude,
-    zoom: DEFAULT_ZOOM,
-  });
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
 
   const handleLoad = useCallback(
     (event: { target: { resize: () => void } }) => {
@@ -36,23 +32,19 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
     [],
   );
 
-  useEffect(() => {
-    setViewState((prev) => ({ ...prev, latitude, longitude }));
-  }, [latitude, longitude]);
-
   const clampZoom = useCallback((value: number) => {
     return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
   }, []);
 
   const handleZoomChange = useCallback(
     (delta: number) => {
-      setViewState((prev) => ({ ...prev, zoom: clampZoom(prev.zoom + delta) }));
+      setZoom((prev) => clampZoom(prev + delta));
     },
     [clampZoom],
   );
 
-  const canZoomIn = viewState.zoom < MAX_ZOOM;
-  const canZoomOut = viewState.zoom > MIN_ZOOM;
+  const canZoomIn = zoom < MAX_ZOOM;
+  const canZoomOut = zoom > MIN_ZOOM;
 
   return (
     <div
@@ -65,15 +57,15 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
         mapLib={import("maplibre-gl")}
         reuseMaps
         initialViewState={{
-          latitude: viewState.latitude,
-          longitude: viewState.longitude,
-          zoom: viewState.zoom,
+          latitude,
+          longitude,
+          zoom,
           bearing: 0,
           pitch: 0,
         }}
-        latitude={viewState.latitude}
-        longitude={viewState.longitude}
-        zoom={viewState.zoom}
+        latitude={latitude}
+        longitude={longitude}
+        zoom={zoom}
         minZoom={MIN_ZOOM}
         maxZoom={MAX_ZOOM}
         style={{ width: "100%", height: "100%" }}
