@@ -9,7 +9,14 @@ A plugin to visualize image locations on a map in [Eagle](https://eagle.cool/) A
 
 <img width="374" height="412" alt="Image" src="https://github.com/user-attachments/assets/9786bfd2-66d2-482a-9b9a-7be5bb7b5f1c" />
 
-## Usage
+## Installation
+
+Install directly from the Eagle plugin community:
+
+1. Open the [plugin page](https://community.eagle.cool/plugin/7a4a309f-4962-4082-8238-33e5ac50e6eb).
+2. Click **Download** to add the plugin to your Eagle App.
+
+## Build from Source
 
 ```
 pnpm ci
