@@ -1,6 +1,25 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Coordinates } from "../types";
-import { createSelectionLocationLoader } from "./selection-location-loader";
+import { loadSelectionLocation } from "./selection-location-loader";
+
+const mocks = vi.hoisted(() => {
+  type ParseImageLocation =
+    typeof import("./image-location-reader").parseImageLocation;
+  type ReadBinaryFromUrl = typeof import("./binary-reader").readBinaryFromUrl;
+
+  return {
+    parseImageLocation: vi.fn<ParseImageLocation>(),
+    readBinaryFromUrl: vi.fn<ReadBinaryFromUrl>(),
+  };
+});
+
+vi.mock("./binary-reader", () => ({
+  readBinaryFromUrl: mocks.readBinaryFromUrl,
+}));
+
+vi.mock("./image-location-reader", () => ({
+  parseImageLocation: mocks.parseImageLocation,
+}));
 
 const coordinates: Coordinates = {
   latitude: 35.702755186666664,
@@ -8,45 +27,62 @@ const coordinates: Coordinates = {
   altitude: 57.75,
 };
 
-describe("loadSelectionLocation", () => {
-  it("returns no-selection for an empty selection", async () => {
-    const loader = createSelectionLocationLoader(() =>
-      Promise.reject(new Error("reader should not be called")),
-    );
+beforeEach(() => {
+  mocks.parseImageLocation.mockReset();
+  mocks.readBinaryFromUrl.mockReset();
+});
 
-    await expect(loader([])).resolves.toEqual({ status: "no-selection" });
+describe("loadSelectionLocation", () => {
+  it("returns no-selection without reading a file", async () => {
+    await expect(loadSelectionLocation([])).resolves.toEqual({
+      status: "no-selection",
+    });
+    expect(mocks.readBinaryFromUrl).not.toHaveBeenCalled();
   });
 
-  it("loads the first selected file URL", async () => {
+  it("reads and parses the first selected file", async () => {
+    const binary = new ArrayBuffer(4);
     const controller = new AbortController();
-    const calls: Array<{ sourceUrl: string; signal?: AbortSignal }> = [];
-    const loader = createSelectionLocationLoader((sourceUrl, options) => {
-      calls.push({ sourceUrl, signal: options?.signal });
-      return Promise.resolve(coordinates);
-    });
+    mocks.readBinaryFromUrl.mockResolvedValue(binary);
+    mocks.parseImageLocation.mockResolvedValue(coordinates);
 
     await expect(
-      loader([{ fileURL: "first.jpg" }, { fileURL: "second.jpg" }], {
-        signal: controller.signal,
-      }),
+      loadSelectionLocation(
+        [{ fileURL: "first.jpg" }, { fileURL: "second.jpg" }],
+        { signal: controller.signal },
+      ),
     ).resolves.toEqual({ status: "ready", coordinates });
-    expect(calls).toEqual([
-      { sourceUrl: "first.jpg", signal: controller.signal },
-    ]);
-  });
-
-  it("returns no-gps when the reader returns null", async () => {
-    const loader = createSelectionLocationLoader(() => Promise.resolve(null));
-
-    await expect(loader([{ fileURL: "image.jpg" }])).resolves.toEqual({
-      status: "no-gps",
+    expect(mocks.readBinaryFromUrl).toHaveBeenCalledWith("first.jpg", {
+      signal: controller.signal,
     });
+    expect(mocks.parseImageLocation).toHaveBeenCalledWith(binary);
   });
 
-  it("propagates reader errors", async () => {
-    const error = new Error("reader failed");
-    const loader = createSelectionLocationLoader(() => Promise.reject(error));
+  it("returns no-gps when the parser returns null", async () => {
+    mocks.readBinaryFromUrl.mockResolvedValue(new ArrayBuffer(0));
+    mocks.parseImageLocation.mockResolvedValue(null);
 
-    await expect(loader([{ fileURL: "image.jpg" }])).rejects.toBe(error);
+    await expect(
+      loadSelectionLocation([{ fileURL: "image.jpg" }]),
+    ).resolves.toEqual({ status: "no-gps" });
+  });
+
+  it("propagates binary read errors", async () => {
+    const error = new Error("reader failed");
+    mocks.readBinaryFromUrl.mockRejectedValue(error);
+
+    await expect(
+      loadSelectionLocation([{ fileURL: "image.jpg" }]),
+    ).rejects.toBe(error);
+  });
+
+  it("propagates location parse errors", async () => {
+    const error = new Error("parser failed");
+    mocks.readBinaryFromUrl.mockResolvedValue(new ArrayBuffer(0));
+    mocks.parseImageLocation.mockRejectedValue(error);
+
+    await expect(
+      loadSelectionLocation([{ fileURL: "image.jpg" }]),
+    ).rejects.toBe(error);
   });
 });
