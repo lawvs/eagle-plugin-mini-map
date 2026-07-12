@@ -173,7 +173,9 @@ describe("useEagleSelection", () => {
   it("does not show an error for an obsolete aborted request", async () => {
     const firstResult = deferred<SelectionLocationResult>();
     const secondResult = deferred<SelectionLocationResult>();
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
     mocks.getSelected.mockResolvedValue([selected("image.jpg")]);
     mocks.loadSelectionLocation
       .mockReturnValueOnce(firstResult.promise)

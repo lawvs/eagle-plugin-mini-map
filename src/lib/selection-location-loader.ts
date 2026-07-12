@@ -22,9 +22,7 @@ type ReadImageLocation = (
   options?: ReadImageLocationOptions,
 ) => Promise<Coordinates | null>;
 
-export function createSelectionLocationLoader(
-  readLocation: ReadImageLocation,
-) {
+export function createSelectionLocationLoader(readLocation: ReadImageLocation) {
   return async (
     selection: readonly SelectedImage[],
     options?: LoadSelectionLocationOptions,

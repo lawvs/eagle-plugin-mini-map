@@ -139,5 +139,4 @@ export function createImageLocationReader(readBinary: BinaryReader) {
   };
 }
 
-export const readImageLocation =
-  createImageLocationReader(readBinaryFromUrl);
+export const readImageLocation = createImageLocationReader(readBinaryFromUrl);

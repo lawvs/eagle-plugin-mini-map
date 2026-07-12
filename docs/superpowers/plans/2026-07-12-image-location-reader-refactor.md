@@ -38,11 +38,13 @@
 ### Task 1: Image Location Reader
 
 **Files:**
+
 - Create: `src/lib/image-location-reader.ts`
 - Create: `src/lib/image-location-reader.test.ts`
 - Keep for now: `src/lib/location.ts`
 
 **Interfaces:**
+
 - Produces:
 
 ```ts
@@ -57,7 +59,10 @@ export type BinaryReader = (
 
 export function createImageLocationReader(
   readBinary: BinaryReader,
-): (sourceUrl: string, options?: ReadImageLocationOptions) => Promise<Coordinates | null>;
+): (
+  sourceUrl: string,
+  options?: ReadImageLocationOptions,
+) => Promise<Coordinates | null>;
 
 export async function readImageLocation(
   sourceUrl: string,
@@ -178,10 +183,12 @@ git commit -m "feat: add image location reader"
 ### Task 2: Selection Location Loader
 
 **Files:**
+
 - Create: `src/lib/selection-location-loader.ts`
 - Create: `src/lib/selection-location-loader.test.ts`
 
 **Interfaces:**
+
 - Consumes:
 
 ```ts
@@ -307,6 +314,7 @@ git commit -m "feat: add selection location loader"
 ### Task 3: React Selection Hook
 
 **Files:**
+
 - Modify: `src/types.ts`
 - Modify: `src/hooks/use-eagle-selection.ts`
 - Create: `src/hooks/use-eagle-selection.test.tsx`
@@ -314,6 +322,7 @@ git commit -m "feat: add selection location loader"
 - Modify: `pnpm-lock.yaml`
 
 **Interfaces:**
+
 - Consumes:
 
 ```ts
@@ -403,6 +412,7 @@ git commit -m "feat: make Eagle selection loading race-safe"
 ### Task 4: Remove Old Parser Path and Verify
 
 **Files:**
+
 - Delete: `src/lib/location.ts`
 - Delete: `src/lib/location.test.ts`
 - Delete: `src/lib/__snapshots__/location.test.ts.snap`
@@ -410,6 +420,7 @@ git commit -m "feat: make Eagle selection loading race-safe"
 - Modify: `pnpm-lock.yaml`
 
 **Interfaces:**
+
 - No consumers may import `src/lib/location.ts`.
 - `image-location-reader` is the only EXIF parsing module.
 

@@ -80,7 +80,7 @@ pick: [
   "GPSLongitudeRef",
   "GPSAltitude",
   "GPSAltitudeRef",
-]
+];
 ```
 
 Do not pick `latitude` and `longitude` directly. They are derived fields in `exifr`; selecting only those fields did not trigger the source GPS fields in the browser verification.

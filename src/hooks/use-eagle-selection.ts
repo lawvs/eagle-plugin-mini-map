@@ -17,8 +17,9 @@ function isSignalAborted(signal: AbortSignal): boolean {
 }
 
 export function useEagleSelection() {
-  const [selectionState, setSelectionState] =
-    useState<SelectionLocationState>({ status: "loading" });
+  const [selectionState, setSelectionState] = useState<SelectionLocationState>({
+    status: "loading",
+  });
   const currentRequest = useRef<{
     id: number;
     controller: AbortController;
