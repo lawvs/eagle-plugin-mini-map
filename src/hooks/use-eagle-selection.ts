@@ -12,6 +12,10 @@ function toErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Unexpected error";
 }
 
+function isSignalAborted(signal: AbortSignal): boolean {
+  return signal.aborted;
+}
+
 export function useEagleSelection() {
   const [selectionState, setSelectionState] =
     useState<SelectionLocationState>({ status: "loading" });
@@ -36,7 +40,7 @@ export function useEagleSelection() {
     try {
       const selection = await eagle.item.getSelected();
 
-      if (!isCurrentRequest() || controller.signal.aborted) {
+      if (!isCurrentRequest() || isSignalAborted(controller.signal)) {
         return;
       }
 
@@ -44,7 +48,7 @@ export function useEagleSelection() {
         signal: controller.signal,
       });
 
-      if (!isCurrentRequest() || controller.signal.aborted) {
+      if (!isCurrentRequest() || isSignalAborted(controller.signal)) {
         return;
       }
 

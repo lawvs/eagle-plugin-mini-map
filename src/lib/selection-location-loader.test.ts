@@ -10,9 +10,9 @@ const coordinates: Coordinates = {
 
 describe("loadSelectionLocation", () => {
   it("returns no-selection for an empty selection", async () => {
-    const loader = createSelectionLocationLoader(async () => {
-      throw new Error("reader should not be called");
-    });
+    const loader = createSelectionLocationLoader(() =>
+      Promise.reject(new Error("reader should not be called")),
+    );
 
     await expect(loader([])).resolves.toEqual({ status: "no-selection" });
   });
@@ -20,9 +20,9 @@ describe("loadSelectionLocation", () => {
   it("loads the first selected file URL", async () => {
     const controller = new AbortController();
     const calls: Array<{ sourceUrl: string; signal?: AbortSignal }> = [];
-    const loader = createSelectionLocationLoader(async (sourceUrl, options) => {
+    const loader = createSelectionLocationLoader((sourceUrl, options) => {
       calls.push({ sourceUrl, signal: options?.signal });
-      return coordinates;
+      return Promise.resolve(coordinates);
     });
 
     await expect(
@@ -36,7 +36,7 @@ describe("loadSelectionLocation", () => {
   });
 
   it("returns no-gps when the reader returns null", async () => {
-    const loader = createSelectionLocationLoader(async () => null);
+    const loader = createSelectionLocationLoader(() => Promise.resolve(null));
 
     await expect(loader([{ fileURL: "image.jpg" }])).resolves.toEqual({
       status: "no-gps",
@@ -45,9 +45,7 @@ describe("loadSelectionLocation", () => {
 
   it("propagates reader errors", async () => {
     const error = new Error("reader failed");
-    const loader = createSelectionLocationLoader(async () => {
-      throw error;
-    });
+    const loader = createSelectionLocationLoader(() => Promise.reject(error));
 
     await expect(loader([{ fileURL: "image.jpg" }])).rejects.toBe(error);
   });

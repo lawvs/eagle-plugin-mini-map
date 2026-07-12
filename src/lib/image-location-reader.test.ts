@@ -19,7 +19,7 @@ async function readArrayBuffer(filePath: string): Promise<ArrayBuffer> {
 describe("readImageLocation", () => {
   it("reads decimal coordinates and altitude from a JPEG", async () => {
     const imageData = await readArrayBuffer(imageFixture);
-    const reader = createImageLocationReader(async () => imageData);
+    const reader = createImageLocationReader(() => Promise.resolve(imageData));
 
     await expect(reader("fixture.jpg")).resolves.toEqual({
       latitude: 35.702755186666664,
@@ -30,16 +30,14 @@ describe("readImageLocation", () => {
 
   it("returns null when an image has no readable GPS metadata", async () => {
     const imageData = await readArrayBuffer(thumbnailFixture);
-    const reader = createImageLocationReader(async () => imageData);
+    const reader = createImageLocationReader(() => Promise.resolve(imageData));
 
     await expect(reader("thumbnail.png")).resolves.toBeNull();
   });
 
   it("rejects read failures", async () => {
     const error = new Error("cannot read source");
-    const reader = createImageLocationReader(async () => {
-      throw error;
-    });
+    const reader = createImageLocationReader(() => Promise.reject(error));
 
     await expect(reader("broken.jpg")).rejects.toBe(error);
   });
@@ -47,9 +45,9 @@ describe("readImageLocation", () => {
   it("passes the abort signal to the binary reader", async () => {
     const controller = new AbortController();
     const abortError = new DOMException("Aborted", "AbortError");
-    const reader = createImageLocationReader(async (_sourceUrl, options) => {
+    const reader = createImageLocationReader((_sourceUrl, options) => {
       expect(options?.signal).toBe(controller.signal);
-      throw abortError;
+      return Promise.reject(abortError);
     });
 
     controller.abort();
@@ -61,7 +59,9 @@ describe("readImageLocation", () => {
 
   it("rejects non-OK fetch responses in the production reader", async () => {
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn(async () => new Response(null, { status: 404 }));
+    globalThis.fetch = vi.fn(() =>
+      Promise.resolve(new Response(null, { status: 404 })),
+    );
 
     try {
       await expect(readImageLocation("/missing.jpg")).rejects.toThrow(

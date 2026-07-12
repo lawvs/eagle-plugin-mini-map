@@ -1,9 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`resolveImageLocation > converts EXIF GPS metadata to decimal coordinates 1`] = `
-{
-  "altitude": 57.75,
-  "latitude": 35.702755186666664,
-  "longitude": 139.77182481666668,
-}
-`;

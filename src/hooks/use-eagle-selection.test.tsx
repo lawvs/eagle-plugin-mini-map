@@ -79,16 +79,16 @@ function deferred<T>() {
   return { promise, resolve, reject };
 }
 
-async function triggerPluginCreate(): Promise<void> {
+function triggerPluginCreate(): void {
   expect(mocks.callbacks.create).toBeTypeOf("function");
-  await act(async () => {
+  act(() => {
     mocks.callbacks.create?.();
   });
 }
 
-async function triggerPluginRun(): Promise<void> {
+function triggerPluginRun(): void {
   expect(mocks.callbacks.run).toBeTypeOf("function");
-  await act(async () => {
+  act(() => {
     mocks.callbacks.run?.();
   });
 }
@@ -124,15 +124,15 @@ describe("useEagleSelection", () => {
       errorMessage: "",
     });
 
-    await triggerPluginCreate();
+    triggerPluginCreate();
 
     await waitFor(() => expect(result.current.state).toBe("ready"));
     expect(result.current.coordinates).toEqual(coordinates);
     expect(result.current.errorMessage).toBe("");
 
     const firstCall = mocks.loadSelectionLocation.mock.calls[0];
-    expect(firstCall?.[0]).toEqual([selected("image.jpg")]);
-    expect(firstCall?.[1]?.signal).toBeInstanceOf(AbortSignal);
+    expect(firstCall[0]).toEqual([selected("image.jpg")]);
+    expect(firstCall[1]?.signal).toBeInstanceOf(AbortSignal);
   });
 
   it("ignores an older result after a newer selection request finishes", async () => {
@@ -145,17 +145,17 @@ describe("useEagleSelection", () => {
 
     const { result } = renderHook(() => useEagleSelection());
 
-    await triggerPluginCreate();
+    triggerPluginCreate();
     await waitFor(() =>
       expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(1),
     );
 
-    await triggerPluginRun();
+    triggerPluginRun();
     await waitFor(() =>
       expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(2),
     );
 
-    await act(async () => {
+    act(() => {
       secondResult.resolve({ status: "ready", coordinates: newerCoordinates });
     });
 
@@ -163,7 +163,7 @@ describe("useEagleSelection", () => {
       expect(result.current.coordinates).toEqual(newerCoordinates),
     );
 
-    await act(async () => {
+    act(() => {
       firstResult.resolve({ status: "ready", coordinates });
     });
 
@@ -181,17 +181,17 @@ describe("useEagleSelection", () => {
 
     const { result } = renderHook(() => useEagleSelection());
 
-    await triggerPluginCreate();
+    triggerPluginCreate();
     await waitFor(() =>
       expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(1),
     );
 
-    await triggerPluginRun();
+    triggerPluginRun();
     await waitFor(() =>
       expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(2),
     );
 
-    await act(async () => {
+    act(() => {
       firstResult.reject(new DOMException("Aborted", "AbortError"));
       secondResult.resolve({ status: "no-gps" });
     });
@@ -214,7 +214,7 @@ describe("useEagleSelection", () => {
 
     const { unmount } = renderHook(() => useEagleSelection());
 
-    await triggerPluginCreate();
+    triggerPluginCreate();
     await waitFor(() =>
       expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(1),
     );
@@ -224,7 +224,7 @@ describe("useEagleSelection", () => {
 
     expect(requestSignal?.aborted).toBe(true);
 
-    await act(async () => {
+    act(() => {
       pendingResult.resolve({ status: "ready", coordinates });
     });
   });

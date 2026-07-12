@@ -29,12 +29,11 @@ export function createSelectionLocationLoader(
     selection: readonly SelectedImage[],
     options?: LoadSelectionLocationOptions,
   ): Promise<SelectionLocationResult> => {
-    const selectedImage = selection[0];
-
-    if (!selectedImage) {
+    if (selection.length === 0) {
       return { status: "no-selection" };
     }
 
+    const selectedImage = selection[0];
     const coordinates = await readLocation(selectedImage.fileURL, {
       signal: options?.signal,
     });
