@@ -39,14 +39,48 @@ function isBelowSeaLevel(ref: unknown): boolean {
   return isRecord(ref) && ref["0"] === 1;
 }
 
+function gpsCoordinateToDecimal(
+  coordinate: unknown,
+  ref: unknown,
+): number | null {
+  if (!Array.isArray(coordinate) || coordinate.length < 3) {
+    return null;
+  }
+
+  const coordinateParts = coordinate as readonly unknown[];
+  const degrees = coordinateParts[0];
+  const minutes = coordinateParts[1];
+  const seconds = coordinateParts[2];
+
+  if (
+    typeof degrees !== "number" ||
+    typeof minutes !== "number" ||
+    typeof seconds !== "number" ||
+    typeof ref !== "string"
+  ) {
+    return null;
+  }
+
+  const decimal = degrees + minutes / 60 + seconds / 3600;
+  return ref === "S" || ref === "W" ? -decimal : decimal;
+}
+
 function toCoordinates(metadata: unknown): Coordinates | null {
   if (!isRecord(metadata)) {
     return null;
   }
 
-  const { latitude, longitude, GPSAltitude, GPSAltitudeRef } = metadata;
+  const { GPSAltitude, GPSAltitudeRef } = metadata;
+  const latitude =
+    typeof metadata.latitude === "number"
+      ? metadata.latitude
+      : gpsCoordinateToDecimal(metadata.GPSLatitude, metadata.GPSLatitudeRef);
+  const longitude =
+    typeof metadata.longitude === "number"
+      ? metadata.longitude
+      : gpsCoordinateToDecimal(metadata.GPSLongitude, metadata.GPSLongitudeRef);
 
-  if (typeof latitude !== "number" || typeof longitude !== "number") {
+  if (latitude === null || longitude === null) {
     return null;
   }
 

@@ -6,7 +6,7 @@
 
 **Architecture:** `image-location-reader` owns resource reading and GPS parsing behind `readImageLocation(sourceUrl, options)`. `selection-location-loader` converts selected `{ fileURL }` values into domain results. `use-eagle-selection` stays as the Eagle/React bridge and exposes the current app contract while storing a discriminated internal state.
 
-**Tech Stack:** React 19, TypeScript strict mode, Vite 8, Vitest 4, exifr 7.1.3, jsdom + React Testing Library for hook tests.
+**Tech Stack:** React 19, TypeScript strict mode, the repo's current Vite configuration, Vitest 4, exifr 7.1.3, jsdom + React Testing Library for hook tests.
 
 ## Global Constraints
 

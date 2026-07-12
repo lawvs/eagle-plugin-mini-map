@@ -26,6 +26,10 @@ export function useEagleSelection() {
   const isMounted = useRef(false);
 
   const loadSelection = useCallback(async (): Promise<void> => {
+    if (!isMounted.current) {
+      return;
+    }
+
     currentRequest.current?.controller.abort();
 
     const requestId = (currentRequest.current?.id ?? 0) + 1;

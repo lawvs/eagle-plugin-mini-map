@@ -228,4 +228,20 @@ describe("useEagleSelection", () => {
       pendingResult.resolve({ status: "ready", coordinates });
     });
   });
+
+  it("ignores retained Eagle callbacks after unmount", () => {
+    mocks.getSelected.mockResolvedValue([selected("image.jpg")]);
+    mocks.loadSelectionLocation.mockResolvedValue({
+      status: "ready",
+      coordinates,
+    });
+
+    const { unmount } = renderHook(() => useEagleSelection());
+
+    unmount();
+    triggerPluginRun();
+
+    expect(mocks.getSelected).not.toHaveBeenCalled();
+    expect(mocks.loadSelectionLocation).not.toHaveBeenCalled();
+  });
 });
