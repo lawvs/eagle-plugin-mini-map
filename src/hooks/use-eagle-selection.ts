@@ -1,64 +1,70 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { eagle } from "../eagle";
 import { IN_EAGLE } from "../eagle/env";
-import type { Item } from "../eagle/types";
-import { resolveImageLocation } from "../lib/location";
-import type { Coordinates, LoadState } from "../types";
+import { loadSelectionLocation } from "../lib/selection-location-loader";
+import type { Coordinates, LoadState, SelectionLocationState } from "../types";
 
-async function fetchBinary(url: string): Promise<ArrayBuffer> {
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Failed to fetch source (${response.status})`);
-  }
-
-  return response.arrayBuffer();
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError";
 }
 
-const resolveItemLocation = async (item: Item): Promise<Coordinates | null> => {
-  const filePath = item.fileURL;
-  const buffer = await fetchBinary(filePath);
-  return resolveImageLocation(buffer);
-};
+function toErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Unexpected error";
+}
 
 export function useEagleSelection() {
-  const [state, setState] = useState<LoadState>("loading");
-  const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [selectionState, setSelectionState] =
+    useState<SelectionLocationState>({ status: "loading" });
+  const currentRequest = useRef<{
+    id: number;
+    controller: AbortController;
+  } | null>(null);
+  const isMounted = useRef(false);
 
   const loadSelection = useCallback(async (): Promise<void> => {
-    setState("loading");
-    setErrorMessage("");
+    currentRequest.current?.controller.abort();
+
+    const requestId = (currentRequest.current?.id ?? 0) + 1;
+    const controller = new AbortController();
+    currentRequest.current = { id: requestId, controller };
+
+    const isCurrentRequest = () =>
+      isMounted.current && currentRequest.current?.id === requestId;
+
+    setSelectionState({ status: "loading" });
 
     try {
       const selection = await eagle.item.getSelected();
-      const item = selection.length > 0 ? selection[0] : undefined;
 
-      if (!item) {
-        setCoordinates(null);
-        setState("no-selection");
+      if (!isCurrentRequest() || controller.signal.aborted) {
         return;
       }
 
-      const location = await resolveItemLocation(item);
+      const result = await loadSelectionLocation(selection, {
+        signal: controller.signal,
+      });
 
-      if (!location) {
-        setCoordinates(null);
-        setState("no-gps");
+      if (!isCurrentRequest() || controller.signal.aborted) {
         return;
       }
 
-      setCoordinates(location);
-      setState("ready");
+      setSelectionState(result);
     } catch (error) {
+      if (!isCurrentRequest() || isAbortError(error)) {
+        return;
+      }
+
       console.error("Failed to load Eagle selection", error);
-      setErrorMessage(
-        error instanceof Error ? error.message : "Unexpected error",
-      );
-      setState("error");
+      setSelectionState({
+        status: "error",
+        message: toErrorMessage(error),
+      });
     }
   }, []);
 
   useEffect(() => {
+    isMounted.current = true;
+
     const initialize = () => {
       void loadSelection();
     };
@@ -71,7 +77,19 @@ export function useEagleSelection() {
     } else {
       initialize();
     }
+
+    return () => {
+      isMounted.current = false;
+      currentRequest.current?.controller.abort();
+      currentRequest.current = null;
+    };
   }, [loadSelection]);
+
+  const state: LoadState = selectionState.status;
+  const coordinates: Coordinates | null =
+    selectionState.status === "ready" ? selectionState.coordinates : null;
+  const errorMessage =
+    selectionState.status === "error" ? selectionState.message : "";
 
   return { state, coordinates, errorMessage };
 }
