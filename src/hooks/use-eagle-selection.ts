@@ -4,18 +4,6 @@ import { IN_EAGLE } from "../eagle/env";
 import { loadSelectionLocation } from "../lib/selection-location-loader";
 import type { Coordinates, LoadState, SelectionLocationState } from "../types";
 
-function isAbortError(error: unknown): boolean {
-  return error instanceof Error && error.name === "AbortError";
-}
-
-function toErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : "Unexpected error";
-}
-
-function isSignalAborted(signal: AbortSignal): boolean {
-  return signal.aborted;
-}
-
 export function useEagleSelection() {
   const [selectionState, setSelectionState] = useState<SelectionLocationState>({
     status: "loading",
@@ -37,15 +25,17 @@ export function useEagleSelection() {
     const controller = new AbortController();
     currentRequest.current = { id: requestId, controller };
 
-    const isCurrentRequest = () =>
-      isMounted.current && currentRequest.current?.id === requestId;
+    const isActiveRequest = () =>
+      isMounted.current &&
+      currentRequest.current?.id === requestId &&
+      !controller.signal.aborted;
 
     setSelectionState({ status: "loading" });
 
     try {
       const selection = await eagle.item.getSelected();
 
-      if (!isCurrentRequest() || isSignalAborted(controller.signal)) {
+      if (!isActiveRequest()) {
         return;
       }
 
@@ -53,20 +43,20 @@ export function useEagleSelection() {
         signal: controller.signal,
       });
 
-      if (!isCurrentRequest() || isSignalAborted(controller.signal)) {
+      if (!isActiveRequest()) {
         return;
       }
 
       setSelectionState(result);
     } catch (error) {
-      if (!isCurrentRequest() || isAbortError(error)) {
+      if (!isActiveRequest()) {
         return;
       }
 
       console.error("Failed to load Eagle selection", error);
       setSelectionState({
         status: "error",
-        message: toErrorMessage(error),
+        message: error instanceof Error ? error.message : "Unexpected error",
       });
     }
   }, []);

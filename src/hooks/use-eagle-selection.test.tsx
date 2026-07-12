@@ -205,6 +205,29 @@ describe("useEagleSelection", () => {
     consoleError.mockRestore();
   });
 
+  it("reports an AbortError from the active request", async () => {
+    const error = new Error("Parser aborted unexpectedly");
+    error.name = "AbortError";
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    mocks.getSelected.mockResolvedValue([selected("image.jpg")]);
+    mocks.loadSelectionLocation.mockRejectedValue(error);
+
+    const { result } = renderHook(() => useEagleSelection());
+
+    triggerPluginCreate();
+
+    await waitFor(() => expect(result.current.state).toBe("error"));
+    expect(result.current.errorMessage).toBe("Parser aborted unexpectedly");
+    expect(consoleError).toHaveBeenCalledWith(
+      "Failed to load Eagle selection",
+      error,
+    );
+
+    consoleError.mockRestore();
+  });
+
   it("aborts an in-flight request on unmount", async () => {
     const pendingResult = deferred<SelectionLocationResult>();
     let requestSignal: AbortSignal | undefined;
