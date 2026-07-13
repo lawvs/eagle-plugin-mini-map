@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { LocationDetails } from "./components/location-details";
+import { SettingsMenu } from "./components/settings-menu";
 import { StatusPanel } from "./components/status-panel";
 import { IN_EAGLE } from "./eagle/env";
 import { useEagleSelection } from "./hooks/use-eagle-selection";
@@ -21,10 +22,12 @@ function App() {
 
   return (
     <div
-      className={`flex h-full flex-col gap-3 p-3 transition-colors ${
+      className={`relative flex h-full flex-col gap-3 p-3 transition-colors ${
         isLightTheme ? "text-slate-900" : "text-white/90"
       } ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
     >
+      <SettingsMenu />
+
       {state === "ready" && coordinates ? (
         <LocationDetails coordinates={coordinates} openMapUrl={openMapUrl} />
       ) : (
