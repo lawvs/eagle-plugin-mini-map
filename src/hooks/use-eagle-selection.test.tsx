@@ -14,7 +14,6 @@ import {
 import type { SelectionLocationResult } from "../lib/selection-location-loader";
 import type { Coordinates } from "../types";
 import { useEagleSelection } from "./use-eagle-selection";
-import { useEagleSelectionRefresh } from "./use-eagle-selection-refresh";
 
 const mocks = vi.hoisted(() => {
   type MinimalItem = { fileURL: string };
@@ -127,17 +126,6 @@ beforeAll(() => {
 });
 
 describe("useEagleSelection", () => {
-  it("runs a refresh handler with an AbortSignal", async () => {
-    const handler = vi
-      .fn<(signal: AbortSignal) => Promise<void>>()
-      .mockResolvedValue(undefined);
-
-    renderHook(() => useEagleSelectionRefresh(handler));
-
-    await waitFor(() => expect(handler).toHaveBeenCalledTimes(1));
-    expect(handler.mock.calls[0][0]).toBeInstanceOf(AbortSignal);
-  });
-
   it("loads the selected image into the ready state", async () => {
     mocks.getSelected.mockResolvedValue([selected("image.jpg")]);
     mocks.loadSelectionLocation.mockResolvedValue({

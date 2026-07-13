@@ -1,8 +1,25 @@
 import { useState } from "react";
 import { eagle } from "../eagle";
+import { IN_EAGLE } from "../eagle/env";
 import { loadSelectionLocation } from "../lib/selection-location-loader";
 import type { Coordinates, LoadState, SelectionLocationState } from "../types";
-import { useEagleSelectionRefresh } from "./use-eagle-selection-refresh";
+import {
+  createEventHook,
+  type CancellableEventHandler,
+} from "./create-event-hook";
+
+const selectionRefresh = createEventHook();
+
+if (IN_EAGLE) {
+  eagle.onPluginCreate(selectionRefresh.emit);
+  eagle.onPluginRun(selectionRefresh.emit);
+} else {
+  selectionRefresh.emit();
+}
+
+function useEagleSelectionRefresh(handler: CancellableEventHandler): void {
+  selectionRefresh.useEvent(handler);
+}
 
 export function useEagleSelection() {
   const [selectionState, setSelectionState] = useState<SelectionLocationState>({
