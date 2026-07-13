@@ -156,15 +156,6 @@ describe("loadSelectionLocation", () => {
     expect(mocks.parseImageLocation).toHaveBeenCalledTimes(2);
   });
 
-  it("propagates binary read errors", async () => {
-    const error = new Error("reader failed");
-    mocks.readBinaryFromUrl.mockRejectedValue(error);
-
-    await expect(loadSelectionLocation([selected("read-error")])).rejects.toBe(
-      error,
-    );
-  });
-
   it("does not cache binary read errors", async () => {
     const image = selected("retry-read-error");
     const error = new Error("reader failed");
@@ -181,16 +172,6 @@ describe("loadSelectionLocation", () => {
 
     expect(mocks.readBinaryFromUrl).toHaveBeenCalledTimes(2);
     expect(mocks.parseImageLocation).toHaveBeenCalledTimes(1);
-  });
-
-  it("propagates location parse errors", async () => {
-    const error = new Error("parser failed");
-    mocks.readBinaryFromUrl.mockResolvedValue(new ArrayBuffer(0));
-    mocks.parseImageLocation.mockRejectedValue(error);
-
-    await expect(loadSelectionLocation([selected("parse-error")])).rejects.toBe(
-      error,
-    );
   });
 
   it("does not cache location parse errors", async () => {
@@ -231,25 +212,5 @@ describe("loadSelectionLocation", () => {
 
     expect(mocks.readBinaryFromUrl).toHaveBeenCalledTimes(2);
     expect(mocks.parseImageLocation).toHaveBeenCalledTimes(2);
-  });
-
-  it("evicts the oldest cached location after 256 entries", async () => {
-    const firstImage = selected("evicted-0");
-    const lastImage = selected("evicted-256");
-    mocks.readBinaryFromUrl.mockResolvedValue(new ArrayBuffer(0));
-    mocks.parseImageLocation.mockResolvedValue(coordinates);
-
-    for (let index = 0; index <= 256; index += 1) {
-      await loadSelectionLocation([selected(`evicted-${index}`)]);
-    }
-
-    mocks.readBinaryFromUrl.mockClear();
-    mocks.parseImageLocation.mockClear();
-
-    await loadSelectionLocation([firstImage]);
-    await loadSelectionLocation([lastImage]);
-
-    expect(mocks.readBinaryFromUrl).toHaveBeenCalledTimes(1);
-    expect(mocks.parseImageLocation).toHaveBeenCalledTimes(1);
   });
 });

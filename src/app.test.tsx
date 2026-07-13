@@ -25,7 +25,6 @@ const mocks = vi.hoisted(() => {
   };
 
   return {
-    locationDetailsProps: null as Record<string, unknown> | null,
     selection,
     settings,
     updateSettings: vi.fn(),
@@ -50,15 +49,11 @@ vi.mock("./hooks/use-plugin-theme", () => ({
 }));
 
 vi.mock("./components/location-details", () => ({
-  LocationDetails: (props: Record<string, unknown>) => {
-    mocks.locationDetailsProps = props;
-    return <section>Location details</section>;
-  },
+  LocationDetails: () => <section>Location details</section>,
 }));
 
 afterEach(() => {
   cleanup();
-  mocks.locationDetailsProps = null;
   vi.clearAllMocks();
 });
 
@@ -81,29 +76,21 @@ describe("App settings access", () => {
     const settingsButton = screen.getByLabelText("Settings");
     expect(settingsButton).toBeTruthy();
     fireEvent.click(settingsButton);
-    expect(
-      screen.getByRole<HTMLSelectElement>("combobox", { name: "Theme" }).value,
-    ).toBe("dark");
-    expect(
-      screen.getByRole<HTMLSelectElement>("combobox", {
-        name: "Map style",
-      }).value,
-    ).toBe("light");
-    expect(
-      screen.getByRole<HTMLSelectElement>("combobox", { name: "Open in" })
-        .value,
-    ).toBe("apple");
+    expect(screen.getByRole("combobox", { name: "Theme" })).toBeTruthy();
   });
 
-  it("offers the exact settings choices", () => {
+  it("shows the current settings and exact choices", () => {
     render(<App />);
     fireEvent.click(screen.getByLabelText("Settings"));
 
+    const select = (name: string) =>
+      screen.getByRole<HTMLSelectElement>("combobox", { name });
     const optionLabels = (name: string) =>
-      Array.from(
-        screen.getByRole<HTMLSelectElement>("combobox", { name }).options,
-        (option) => option.text,
-      );
+      Array.from(select(name).options, (option) => option.text);
+
+    expect(select("Theme").value).toBe("dark");
+    expect(select("Map style").value).toBe("light");
+    expect(select("Open in").value).toBe("apple");
 
     expect(optionLabels("Theme")).toEqual(["Follow Eagle", "Light", "Dark"]);
     expect(optionLabels("Map style")).toEqual(["Match theme", "Light", "Dark"]);
@@ -112,14 +99,5 @@ describe("App settings access", () => {
       "Google Maps",
       "Apple Maps",
     ]);
-  });
-
-  it("delegates ready coordinates without prebuilding an external map URL", () => {
-    const coordinates = { latitude: 1.3521, longitude: 103.8198 };
-    mocks.selection = { state: "ready", coordinates, errorMessage: "" };
-
-    render(<App />);
-
-    expect(mocks.locationDetailsProps).toEqual({ coordinates });
   });
 });

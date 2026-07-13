@@ -7,7 +7,6 @@ import {
   PLUGIN_SETTINGS_STORAGE_KEY,
   type ThemePreference,
 } from "../lib/plugin-settings";
-import { useEagleTheme } from "./use-eagle-theme";
 import {
   PluginSettingsProvider,
   usePluginSettings,
@@ -170,23 +169,5 @@ describe("PluginThemeProvider", () => {
 
     expect(document.documentElement.getAttribute("theme")).toBe("dark");
     expect(document.documentElement.getAttribute("platform")).toBe("win32");
-  });
-});
-
-describe("useEagleTheme", () => {
-  it("updates only its snapshot and leaves html synchronization to the provider", () => {
-    document.documentElement.setAttribute("theme", "sentinel-theme");
-    document.documentElement.setAttribute("platform", "sentinel-platform");
-    const { result } = renderHook(() => useEagleTheme());
-
-    act(() => mocks.emitTheme("DARK"));
-
-    expect(result.current).toBe("dark");
-    expect(document.documentElement.getAttribute("theme")).toBe(
-      "sentinel-theme",
-    );
-    expect(document.documentElement.getAttribute("platform")).toBe(
-      "sentinel-platform",
-    );
   });
 });

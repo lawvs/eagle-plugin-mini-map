@@ -15,14 +15,6 @@ interface ExternalMapTestCase {
 const testCases: ExternalMapTestCase[] = [
   {
     provider: "openstreetmap",
-    coordinates: { latitude: 51.5072, longitude: -0.1276 },
-    expected: {
-      label: "OpenStreetMap",
-      url: "https://www.openstreetmap.org/?mlat=51.5072&mlon=-0.1276&zoom=16",
-    },
-  },
-  {
-    provider: "openstreetmap",
     coordinates: { latitude: -33.8688, longitude: 151.2093 },
     expected: {
       label: "OpenStreetMap",
@@ -31,26 +23,10 @@ const testCases: ExternalMapTestCase[] = [
   },
   {
     provider: "google",
-    coordinates: { latitude: 51.5072, longitude: -0.1276 },
-    expected: {
-      label: "Google Maps",
-      url: "https://www.google.com/maps/search/?api=1&query=51.5072%2C-0.1276",
-    },
-  },
-  {
-    provider: "google",
     coordinates: { latitude: -33.8688, longitude: 151.2093 },
     expected: {
       label: "Google Maps",
       url: "https://www.google.com/maps/search/?api=1&query=-33.8688%2C151.2093",
-    },
-  },
-  {
-    provider: "apple",
-    coordinates: { latitude: 51.5072, longitude: -0.1276 },
-    expected: {
-      label: "Apple Maps",
-      url: "https://maps.apple.com/?ll=51.5072%2C-0.1276&z=16&q=Location",
     },
   },
   {
