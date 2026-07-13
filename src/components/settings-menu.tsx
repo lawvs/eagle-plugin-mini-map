@@ -7,26 +7,46 @@ import type {
   ThemePreference,
 } from "../lib/plugin-settings";
 
-export function SettingsMenu() {
-  const isDark = useIsDarkTheme();
-  const { settings, updateSettings } = usePluginSettings();
+interface SettingOption<Value extends string> {
+  label: string;
+  value: Value;
+}
 
-  const handleThemeChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    updateSettings({ theme: event.currentTarget.value as ThemePreference });
-  };
+interface SettingSelectProps<Value extends string> {
+  isDark: boolean;
+  label: string;
+  onValueChange: (value: Value) => void;
+  options: readonly SettingOption<Value>[];
+  value: Value;
+}
 
-  const handleMapStyleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    updateSettings({
-      mapStyle: event.currentTarget.value as MapStylePreference,
-    });
-  };
+const THEME_OPTIONS = [
+  { value: "eagle", label: "Follow Eagle" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+] as const satisfies readonly SettingOption<ThemePreference>[];
 
-  const handleExternalMapProviderChange = (
-    event: ChangeEvent<HTMLSelectElement>,
-  ) => {
-    updateSettings({
-      externalMapProvider: event.currentTarget.value as ExternalMapProvider,
-    });
+const MAP_STYLE_OPTIONS = [
+  { value: "auto", label: "Match theme" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+] as const satisfies readonly SettingOption<MapStylePreference>[];
+
+const EXTERNAL_MAP_PROVIDER_OPTIONS = [
+  { value: "openstreetmap", label: "OpenStreetMap" },
+  { value: "google", label: "Google Maps" },
+  { value: "apple", label: "Apple Maps" },
+] as const satisfies readonly SettingOption<ExternalMapProvider>[];
+
+function SettingSelect<Value extends string>({
+  isDark,
+  label,
+  onValueChange,
+  options,
+  value,
+}: SettingSelectProps<Value>) {
+  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    onValueChange(event.currentTarget.value as Value);
   };
 
   const selectClassName = `w-full rounded-md border px-2 py-1 text-xs outline-none transition-colors focus:ring-2 focus:ring-sky-400/60 ${
@@ -34,6 +54,38 @@ export function SettingsMenu() {
       ? "border-white/10 bg-slate-800 text-white"
       : "border-slate-200 bg-white text-slate-800"
   }`;
+
+  return (
+    <label className="grid gap-1 text-xs font-medium">
+      <span>{label}</span>
+      <select value={value} onChange={handleChange} className={selectClassName}>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+export function SettingsMenu() {
+  const isDark = useIsDarkTheme();
+  const { settings, updateSettings } = usePluginSettings();
+
+  const handleThemeChange = (theme: ThemePreference) => {
+    updateSettings({ theme });
+  };
+
+  const handleMapStyleChange = (mapStyle: MapStylePreference) => {
+    updateSettings({ mapStyle });
+  };
+
+  const handleExternalMapProviderChange = (
+    externalMapProvider: ExternalMapProvider,
+  ) => {
+    updateSettings({ externalMapProvider });
+  };
 
   return (
     <details className="absolute top-3 right-3 z-50">
@@ -68,44 +120,29 @@ export function SettingsMenu() {
             : "border-slate-200 bg-white/95 shadow-black/15"
         }`}
       >
-        <label className="grid gap-1 text-xs font-medium">
-          <span>Theme</span>
-          <select
-            value={settings.theme}
-            onChange={handleThemeChange}
-            className={selectClassName}
-          >
-            <option value="eagle">Follow Eagle</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </label>
+        <SettingSelect
+          isDark={isDark}
+          label="Theme"
+          onValueChange={handleThemeChange}
+          options={THEME_OPTIONS}
+          value={settings.theme}
+        />
 
-        <label className="grid gap-1 text-xs font-medium">
-          <span>Map style</span>
-          <select
-            value={settings.mapStyle}
-            onChange={handleMapStyleChange}
-            className={selectClassName}
-          >
-            <option value="auto">Match theme</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </label>
+        <SettingSelect
+          isDark={isDark}
+          label="Map style"
+          onValueChange={handleMapStyleChange}
+          options={MAP_STYLE_OPTIONS}
+          value={settings.mapStyle}
+        />
 
-        <label className="grid gap-1 text-xs font-medium">
-          <span>Open in</span>
-          <select
-            value={settings.externalMapProvider}
-            onChange={handleExternalMapProviderChange}
-            className={selectClassName}
-          >
-            <option value="openstreetmap">OpenStreetMap</option>
-            <option value="google">Google Maps</option>
-            <option value="apple">Apple Maps</option>
-          </select>
-        </label>
+        <SettingSelect
+          isDark={isDark}
+          label="Open in"
+          onValueChange={handleExternalMapProviderChange}
+          options={EXTERNAL_MAP_PROVIDER_OPTIONS}
+          value={settings.externalMapProvider}
+        />
       </div>
     </details>
   );
