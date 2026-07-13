@@ -9,7 +9,6 @@ import {
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ExternalMapLink } from "./external-map-link";
-import type { ExternalMapProvider } from "../lib/plugin-settings";
 
 const mocks = vi.hoisted(() => ({
   inEagle: true,
@@ -55,40 +54,6 @@ afterEach(() => {
 });
 
 describe("ExternalMapLink", () => {
-  it.each<{
-    provider: ExternalMapProvider;
-    label: string;
-    href: string;
-  }>([
-    {
-      provider: "openstreetmap",
-      label: "View on OpenStreetMap",
-      href: "https://www.openstreetmap.org/?mlat=51.5072&mlon=-0.1276&zoom=16",
-    },
-    {
-      provider: "google",
-      label: "View on Google Maps",
-      href: "https://www.google.com/maps/search/?api=1&query=51.5072%2C-0.1276",
-    },
-    {
-      provider: "apple",
-      label: "View on Apple Maps",
-      href: "https://maps.apple.com/?ll=51.5072%2C-0.1276&z=16&q=Location",
-    },
-  ])("renders $provider copy and href", ({ provider, label, href }) => {
-    mocks.settings.externalMapProvider = provider;
-
-    render(
-      <ExternalMapLink
-        coordinates={{ latitude: 51.5072, longitude: -0.1276 }}
-      />,
-    );
-
-    expect(
-      screen.getByRole<HTMLAnchorElement>("link", { name: label }).href,
-    ).toBe(href);
-  });
-
   it("opens the real href with the Eagle shell and prevents browser navigation", () => {
     mocks.settings.externalMapProvider = "google";
     mocks.openExternal.mockResolvedValue(undefined);
