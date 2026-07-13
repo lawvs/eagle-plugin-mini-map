@@ -3,7 +3,13 @@ import { eagle } from "../eagle";
 import { IN_EAGLE } from "../eagle/env";
 import type { EagleTheme } from "../eagle/types";
 
-type ThemeName = "light" | "lightgray" | "gray" | "dark" | "blue" | "purple";
+export type ThemeName =
+  | "light"
+  | "lightgray"
+  | "gray"
+  | "dark"
+  | "blue"
+  | "purple";
 
 const DEFAULT_LIGHT_THEME: ThemeName = "light";
 const DEFAULT_DARK_THEME: ThemeName = "gray";
@@ -33,16 +39,7 @@ let currentTheme: ThemeName = IN_EAGLE
 const listeners = new Set<() => void>();
 
 function updateTheme(eagleTheme: EagleTheme) {
-  const htmlEl = document.querySelector("html");
-  if (!htmlEl) return;
-
-  const themeName = resolveTheme(eagleTheme);
-  currentTheme = themeName;
-
-  htmlEl.classList.add("no-transition");
-  htmlEl.setAttribute("theme", themeName);
-  htmlEl.setAttribute("platform", eagle.app.platform);
-  htmlEl.classList.remove("no-transition");
+  currentTheme = resolveTheme(eagleTheme);
 
   listeners.forEach((listener) => listener());
 }

@@ -3,11 +3,11 @@ import { LocationDetails } from "./components/location-details";
 import { StatusPanel } from "./components/status-panel";
 import { IN_EAGLE } from "./eagle/env";
 import { useEagleSelection } from "./hooks/use-eagle-selection";
-import { useEagleTheme } from "./hooks/use-eagle-theme";
+import { usePluginTheme } from "./hooks/use-plugin-theme";
 
 function App() {
   const { state, coordinates, errorMessage } = useEagleSelection();
-  const theme = useEagleTheme();
+  const theme = usePluginTheme();
   const isLightTheme = theme === "light" || theme === "lightgray";
 
   const openMapUrl = useMemo(() => {
