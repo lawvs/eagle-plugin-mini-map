@@ -1,12 +1,20 @@
 // @vitest-environment jsdom
 
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { StrictMode, type PropsWithChildren } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import type { SelectionLocationResult } from "../lib/selection-location-loader";
 import type { Coordinates } from "../types";
 import { useEagleSelection } from "./use-eagle-selection";
-import { resetEagleSelectionRefreshForTest } from "./use-eagle-selection-refresh";
+import { useEagleSelectionRefresh } from "./use-eagle-selection-refresh";
 
 const mocks = vi.hoisted(() => {
   type MinimalItem = { fileURL: string };
@@ -20,11 +28,13 @@ const mocks = vi.hoisted(() => {
     | { status: "no-gps" }
     | { status: "ready"; coordinates: MinimalCoordinates };
 
+  const callbacks = {
+    create: [] as Array<() => void>,
+    run: [] as Array<() => void>,
+  };
+
   return {
-    callbacks: {
-      create: [] as Array<() => void>,
-      run: [] as Array<() => void>,
-    },
+    callbacks,
     getSelected: vi.fn<() => Promise<MinimalItem[]>>(),
     loadSelectionLocation:
       vi.fn<
@@ -33,8 +43,12 @@ const mocks = vi.hoisted(() => {
           options?: { signal?: AbortSignal },
         ) => Promise<MinimalResult>
       >(),
-    onPluginCreate: vi.fn<(callback: () => void) => void>(),
-    onPluginRun: vi.fn<(callback: () => void) => void>(),
+    onPluginCreate: vi.fn<(callback: () => void) => void>((callback) => {
+      callbacks.create.push(callback);
+    }),
+    onPluginRun: vi.fn<(callback: () => void) => void>((callback) => {
+      callbacks.run.push(callback);
+    }),
   };
 });
 
@@ -100,22 +114,30 @@ function triggerPluginRun(): void {
 }
 
 beforeEach(() => {
-  resetEagleSelectionRefreshForTest();
-  mocks.callbacks.create = [];
-  mocks.callbacks.run = [];
   mocks.getSelected.mockReset();
   mocks.loadSelectionLocation.mockReset();
-  mocks.onPluginCreate.mockReset();
-  mocks.onPluginRun.mockReset();
-  mocks.onPluginCreate.mockImplementation((callback) => {
-    mocks.callbacks.create.push(callback);
-  });
-  mocks.onPluginRun.mockImplementation((callback) => {
-    mocks.callbacks.run.push(callback);
-  });
+});
+
+afterEach(() => {
+  cleanup();
+});
+
+beforeAll(() => {
+  triggerPluginCreate();
 });
 
 describe("useEagleSelection", () => {
+  it("runs a refresh handler with an AbortSignal", async () => {
+    const handler = vi
+      .fn<(signal: AbortSignal) => Promise<void>>()
+      .mockResolvedValue(undefined);
+
+    renderHook(() => useEagleSelectionRefresh(handler));
+
+    await waitFor(() => expect(handler).toHaveBeenCalledTimes(1));
+    expect(handler.mock.calls[0][0]).toBeInstanceOf(AbortSignal);
+  });
+
   it("loads the selected image into the ready state", async () => {
     mocks.getSelected.mockResolvedValue([selected("image.jpg")]);
     mocks.loadSelectionLocation.mockResolvedValue({
@@ -131,8 +153,6 @@ describe("useEagleSelection", () => {
       errorMessage: "",
     });
 
-    triggerPluginCreate();
-
     await waitFor(() => expect(result.current.state).toBe("ready"));
     expect(result.current.coordinates).toEqual(coordinates);
     expect(result.current.errorMessage).toBe("");
@@ -142,7 +162,7 @@ describe("useEagleSelection", () => {
     expect(firstCall[1]?.signal).toBeInstanceOf(AbortSignal);
   });
 
-  it("registers Eagle selection callbacks once across remounts", async () => {
+  it("registers Eagle selection callbacks once across remounts", () => {
     mocks.getSelected.mockResolvedValue([selected("image.jpg")]);
     mocks.loadSelectionLocation.mockResolvedValue({
       status: "ready",
@@ -154,16 +174,14 @@ describe("useEagleSelection", () => {
     });
     firstRender.unmount();
 
-    renderHook(() => useEagleSelection(), { wrapper: StrictModeWrapper });
+    const secondRender = renderHook(() => useEagleSelection(), {
+      wrapper: StrictModeWrapper,
+    });
 
     expect(mocks.onPluginCreate).toHaveBeenCalledTimes(1);
     expect(mocks.onPluginRun).toHaveBeenCalledTimes(1);
 
-    triggerPluginRun();
-
-    await waitFor(() =>
-      expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(1),
-    );
+    secondRender.unmount();
   });
 
   it("ignores an older result after a newer selection request finishes", async () => {
@@ -176,7 +194,6 @@ describe("useEagleSelection", () => {
 
     const { result } = renderHook(() => useEagleSelection());
 
-    triggerPluginCreate();
     await waitFor(() =>
       expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(1),
     );
@@ -214,7 +231,6 @@ describe("useEagleSelection", () => {
 
     const { result } = renderHook(() => useEagleSelection());
 
-    triggerPluginCreate();
     await waitFor(() =>
       expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(1),
     );
@@ -247,8 +263,6 @@ describe("useEagleSelection", () => {
 
     const { result } = renderHook(() => useEagleSelection());
 
-    triggerPluginCreate();
-
     await waitFor(() => expect(result.current.state).toBe("error"));
     expect(result.current.errorMessage).toBe("Parser aborted unexpectedly");
     expect(consoleError).toHaveBeenCalledWith(
@@ -270,7 +284,6 @@ describe("useEagleSelection", () => {
 
     const { unmount } = renderHook(() => useEagleSelection());
 
-    triggerPluginCreate();
     await waitFor(() =>
       expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(1),
     );
@@ -285,7 +298,7 @@ describe("useEagleSelection", () => {
     });
   });
 
-  it("ignores retained Eagle callbacks after unmount", () => {
+  it("ignores retained Eagle callbacks after unmount", async () => {
     mocks.getSelected.mockResolvedValue([selected("image.jpg")]);
     mocks.loadSelectionLocation.mockResolvedValue({
       status: "ready",
@@ -294,7 +307,11 @@ describe("useEagleSelection", () => {
 
     const { unmount } = renderHook(() => useEagleSelection());
 
+    await waitFor(() => expect(mocks.getSelected).toHaveBeenCalledTimes(1));
+
     unmount();
+    mocks.getSelected.mockClear();
+    mocks.loadSelectionLocation.mockClear();
     triggerPluginRun();
 
     expect(mocks.getSelected).not.toHaveBeenCalled();
