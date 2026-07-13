@@ -33,10 +33,12 @@ function isExternalMapProvider(value: unknown): value is ExternalMapProvider {
 }
 
 export function readPluginSettings(
-  storage: Pick<Storage, "getItem"> = localStorage,
+  storage?: Pick<Storage, "getItem">,
 ): PluginSettings {
   try {
-    const serialized = storage.getItem(PLUGIN_SETTINGS_STORAGE_KEY);
+    const serialized = (storage ?? globalThis.localStorage).getItem(
+      PLUGIN_SETTINGS_STORAGE_KEY,
+    );
     if (serialized === null) return { ...DEFAULT_PLUGIN_SETTINGS };
 
     const stored: unknown = JSON.parse(serialized);
@@ -60,10 +62,13 @@ export function readPluginSettings(
 
 export function writePluginSettings(
   settings: Readonly<PluginSettings>,
-  storage: Pick<Storage, "setItem"> = localStorage,
+  storage?: Pick<Storage, "setItem">,
 ): void {
   try {
-    storage.setItem(PLUGIN_SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+    (storage ?? globalThis.localStorage).setItem(
+      PLUGIN_SETTINGS_STORAGE_KEY,
+      JSON.stringify(settings),
+    );
   } catch (error: unknown) {
     console.warn("Failed to persist plugin settings", error);
   }

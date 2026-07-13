@@ -13,6 +13,32 @@ function readableStorage(value: string | null): Pick<Storage, "getItem"> {
   };
 }
 
+function withThrowingLocalStorageAccessor(
+  run: (error: DOMException) => void,
+): void {
+  const descriptor = Object.getOwnPropertyDescriptor(
+    globalThis,
+    "localStorage",
+  );
+  const error = new DOMException("Storage unavailable", "SecurityError");
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    get: () => {
+      throw error;
+    },
+  });
+
+  try {
+    run(error);
+  } finally {
+    if (descriptor) {
+      Object.defineProperty(globalThis, "localStorage", descriptor);
+    } else {
+      Reflect.deleteProperty(globalThis, "localStorage");
+    }
+  }
+}
+
 describe("readPluginSettings", () => {
   it("returns immutable defaults when settings are missing", () => {
     const storage = readableStorage(null);
@@ -71,6 +97,12 @@ describe("readPluginSettings", () => {
 
     expect(readPluginSettings(storage)).toEqual(DEFAULT_PLUGIN_SETTINGS);
   });
+
+  it("returns defaults when accessing global localStorage throws", () => {
+    withThrowingLocalStorageAccessor(() => {
+      expect(readPluginSettings()).toEqual(DEFAULT_PLUGIN_SETTINGS);
+    });
+  });
 });
 
 describe("writePluginSettings", () => {
@@ -110,5 +142,23 @@ describe("writePluginSettings", () => {
     );
 
     consoleWarn.mockRestore();
+  });
+
+  it("warns instead of throwing when accessing global localStorage fails", () => {
+    const consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    try {
+      withThrowingLocalStorageAccessor((error) => {
+        expect(() =>
+          writePluginSettings(DEFAULT_PLUGIN_SETTINGS),
+        ).not.toThrow();
+        expect(consoleWarn).toHaveBeenCalledWith(
+          "Failed to persist plugin settings",
+          error,
+        );
+      });
+    } finally {
+      consoleWarn.mockRestore();
+    }
   });
 });
