@@ -11,12 +11,20 @@ import {
   it,
   vi,
 } from "vitest";
-import type { SelectionLocationResult } from "../lib/selection-location-loader";
+import type {
+  SelectedImage,
+  SelectionLocationResult,
+} from "../lib/selection-location-loader";
 import type { Coordinates } from "../types";
 import { useEagleSelection } from "./use-eagle-selection";
 
 const mocks = vi.hoisted(() => {
-  type MinimalItem = { fileURL: string };
+  type MinimalItem = {
+    id: string;
+    modifiedAt: number;
+    size: number;
+    fileURL: string;
+  };
   type MinimalCoordinates = {
     latitude: number;
     longitude: number;
@@ -79,8 +87,13 @@ const newerCoordinates: Coordinates = {
   altitude: 42,
 };
 
-function selected(fileURL: string) {
-  return { fileURL };
+function selected(fileURL: string): SelectedImage {
+  return {
+    id: fileURL,
+    modifiedAt: 1,
+    size: 1_000,
+    fileURL,
+  };
 }
 
 function deferred<T>() {
