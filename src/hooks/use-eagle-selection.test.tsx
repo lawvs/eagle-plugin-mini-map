@@ -1,10 +1,12 @@
 // @vitest-environment jsdom
 
 import { act, renderHook, waitFor } from "@testing-library/react";
+import { StrictMode, type PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { SelectionLocationResult } from "../lib/selection-location-loader";
 import type { Coordinates } from "../types";
 import { useEagleSelection } from "./use-eagle-selection";
+import { resetEagleSelectionRefreshForTest } from "./use-eagle-selection-refresh";
 
 const mocks = vi.hoisted(() => {
   type MinimalItem = { fileURL: string };
@@ -20,8 +22,8 @@ const mocks = vi.hoisted(() => {
 
   return {
     callbacks: {
-      create: undefined as (() => void) | undefined,
-      run: undefined as (() => void) | undefined,
+      create: [] as Array<() => void>,
+      run: [] as Array<() => void>,
     },
     getSelected: vi.fn<() => Promise<MinimalItem[]>>(),
     loadSelectionLocation:
@@ -79,32 +81,37 @@ function deferred<T>() {
   return { promise, resolve, reject };
 }
 
+function StrictModeWrapper({ children }: PropsWithChildren) {
+  return <StrictMode>{children}</StrictMode>;
+}
+
 function triggerPluginCreate(): void {
-  expect(mocks.callbacks.create).toBeTypeOf("function");
+  expect(mocks.callbacks.create.length).toBeGreaterThan(0);
   act(() => {
-    mocks.callbacks.create?.();
+    mocks.callbacks.create.forEach((callback) => callback());
   });
 }
 
 function triggerPluginRun(): void {
-  expect(mocks.callbacks.run).toBeTypeOf("function");
+  expect(mocks.callbacks.run.length).toBeGreaterThan(0);
   act(() => {
-    mocks.callbacks.run?.();
+    mocks.callbacks.run.forEach((callback) => callback());
   });
 }
 
 beforeEach(() => {
-  mocks.callbacks.create = undefined;
-  mocks.callbacks.run = undefined;
+  resetEagleSelectionRefreshForTest();
+  mocks.callbacks.create = [];
+  mocks.callbacks.run = [];
   mocks.getSelected.mockReset();
   mocks.loadSelectionLocation.mockReset();
   mocks.onPluginCreate.mockReset();
   mocks.onPluginRun.mockReset();
   mocks.onPluginCreate.mockImplementation((callback) => {
-    mocks.callbacks.create = callback;
+    mocks.callbacks.create.push(callback);
   });
   mocks.onPluginRun.mockImplementation((callback) => {
-    mocks.callbacks.run = callback;
+    mocks.callbacks.run.push(callback);
   });
 });
 
@@ -133,6 +140,30 @@ describe("useEagleSelection", () => {
     const firstCall = mocks.loadSelectionLocation.mock.calls[0];
     expect(firstCall[0]).toEqual([selected("image.jpg")]);
     expect(firstCall[1]?.signal).toBeInstanceOf(AbortSignal);
+  });
+
+  it("registers Eagle selection callbacks once across remounts", async () => {
+    mocks.getSelected.mockResolvedValue([selected("image.jpg")]);
+    mocks.loadSelectionLocation.mockResolvedValue({
+      status: "ready",
+      coordinates,
+    });
+
+    const firstRender = renderHook(() => useEagleSelection(), {
+      wrapper: StrictModeWrapper,
+    });
+    firstRender.unmount();
+
+    renderHook(() => useEagleSelection(), { wrapper: StrictModeWrapper });
+
+    expect(mocks.onPluginCreate).toHaveBeenCalledTimes(1);
+    expect(mocks.onPluginRun).toHaveBeenCalledTimes(1);
+
+    triggerPluginRun();
+
+    await waitFor(() =>
+      expect(mocks.loadSelectionLocation).toHaveBeenCalledTimes(1),
+    );
   });
 
   it("ignores an older result after a newer selection request finishes", async () => {
