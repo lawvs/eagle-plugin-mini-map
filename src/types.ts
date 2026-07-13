@@ -10,3 +10,10 @@ export interface Coordinates {
   longitude: number;
   altitude?: number;
 }
+
+export type SelectionLocationState =
+  | { status: "loading" }
+  | { status: "ready"; coordinates: Coordinates }
+  | { status: "no-selection" }
+  | { status: "no-gps" }
+  | { status: "error"; message: string };
