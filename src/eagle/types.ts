@@ -101,6 +101,9 @@ interface Eagle extends EagleEvent {
   item: {
     getSelected: () => Promise<Item[]>;
   };
+  shell: {
+    openExternal: (url: string) => Promise<void>;
+  };
   /**
    * Display a pop-up window in the corner of the screen to inform users about operation status.
    */

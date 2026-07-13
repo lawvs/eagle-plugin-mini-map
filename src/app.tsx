@@ -1,32 +1,25 @@
-import { useMemo } from "react";
 import { LocationDetails } from "./components/location-details";
+import { SettingsMenu } from "./components/settings-menu";
 import { StatusPanel } from "./components/status-panel";
 import { IN_EAGLE } from "./eagle/env";
 import { useEagleSelection } from "./hooks/use-eagle-selection";
-import { useEagleTheme } from "./hooks/use-eagle-theme";
+import { usePluginTheme } from "./hooks/use-plugin-theme";
 
 function App() {
   const { state, coordinates, errorMessage } = useEagleSelection();
-  const theme = useEagleTheme();
+  const theme = usePluginTheme();
   const isLightTheme = theme === "light" || theme === "lightgray";
-
-  const openMapUrl = useMemo(() => {
-    if (!coordinates) {
-      return null;
-    }
-
-    const { latitude, longitude } = coordinates;
-    return `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}&zoom=16`;
-  }, [coordinates]);
 
   return (
     <div
-      className={`flex h-full flex-col gap-3 p-3 transition-colors ${
+      className={`relative flex h-full flex-col gap-3 p-3 transition-colors ${
         isLightTheme ? "text-slate-900" : "text-white/90"
       } ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
     >
+      <SettingsMenu />
+
       {state === "ready" && coordinates ? (
-        <LocationDetails coordinates={coordinates} openMapUrl={openMapUrl} />
+        <LocationDetails coordinates={coordinates} />
       ) : (
         <StatusPanel state={state} errorMessage={errorMessage} />
       )}

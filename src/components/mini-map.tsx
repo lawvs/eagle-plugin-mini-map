@@ -2,6 +2,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useCallback, useState } from "react";
 import Map from "react-map-gl/maplibre";
 import { useIsDarkTheme } from "../hooks/use-is-dark-theme";
+import { usePluginSettings } from "../hooks/use-plugin-settings";
+import type { MapStylePreference } from "../lib/plugin-settings";
 import type { Coordinates } from "../types";
 import { ZoomControls } from "./zoom-controls";
 
@@ -17,9 +19,19 @@ const MIN_ZOOM = 2;
 const MAX_ZOOM = 18;
 const DEFAULT_ZOOM = 13;
 
+function resolveMapStyle(
+  preference: MapStylePreference,
+  isDark: boolean,
+): string {
+  if (preference === "light") return MAP_STYLE_LIGHT;
+  if (preference === "dark") return MAP_STYLE_DARK;
+  return isDark ? MAP_STYLE_DARK : MAP_STYLE_LIGHT;
+}
+
 export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
   const isDark = useIsDarkTheme();
-  const mapStyle = isDark ? MAP_STYLE_DARK : MAP_STYLE_LIGHT;
+  const { settings } = usePluginSettings();
+  const mapStyle = resolveMapStyle(settings.mapStyle, isDark);
   const [isLoaded, setIsLoaded] = useState(false);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
 

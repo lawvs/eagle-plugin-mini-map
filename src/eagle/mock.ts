@@ -51,6 +51,9 @@ export const mockEagle: Eagle = {
   item: {
     getSelected: async () => Promise.resolve([mockItem]),
   },
+  shell: {
+    openExternal: async () => Promise.resolve(),
+  },
   notification: {
     show: async ({ title, body }) => {
       console.info(`[Mock notification] ${title}: ${body}`);
