@@ -89,7 +89,7 @@ export function SettingsMenu() {
   };
 
   return (
-    <details className="absolute top-3 right-3 z-50">
+    <details className="absolute top-3 right-0 z-50 opacity-0 transition-opacity duration-150 group-hover:opacity-100 open:opacity-100 focus-within:opacity-100">
       <summary
         aria-label="Settings"
         title="Settings"
