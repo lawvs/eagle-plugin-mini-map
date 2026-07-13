@@ -24,7 +24,12 @@ const mocks = vi.hoisted(() => {
     externalMapProvider: "apple",
   };
 
-  return { selection, settings, updateSettings: vi.fn() };
+  return {
+    locationDetailsProps: null as Record<string, unknown> | null,
+    selection,
+    settings,
+    updateSettings: vi.fn(),
+  };
 });
 
 vi.mock("./eagle/env", () => ({ IN_EAGLE: true }));
@@ -45,11 +50,15 @@ vi.mock("./hooks/use-plugin-theme", () => ({
 }));
 
 vi.mock("./components/location-details", () => ({
-  LocationDetails: () => <section>Location details</section>,
+  LocationDetails: (props: Record<string, unknown>) => {
+    mocks.locationDetailsProps = props;
+    return <section>Location details</section>;
+  },
 }));
 
 afterEach(() => {
   cleanup();
+  mocks.locationDetailsProps = null;
   vi.clearAllMocks();
 });
 
@@ -103,5 +112,14 @@ describe("App settings access", () => {
       "Google Maps",
       "Apple Maps",
     ]);
+  });
+
+  it("delegates ready coordinates without prebuilding an external map URL", () => {
+    const coordinates = { latitude: 1.3521, longitude: 103.8198 };
+    mocks.selection = { state: "ready", coordinates, errorMessage: "" };
+
+    render(<App />);
+
+    expect(mocks.locationDetailsProps).toEqual({ coordinates });
   });
 });

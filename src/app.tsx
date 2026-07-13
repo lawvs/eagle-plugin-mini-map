@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { LocationDetails } from "./components/location-details";
 import { SettingsMenu } from "./components/settings-menu";
 import { StatusPanel } from "./components/status-panel";
@@ -11,15 +10,6 @@ function App() {
   const theme = usePluginTheme();
   const isLightTheme = theme === "light" || theme === "lightgray";
 
-  const openMapUrl = useMemo(() => {
-    if (!coordinates) {
-      return null;
-    }
-
-    const { latitude, longitude } = coordinates;
-    return `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}&zoom=16`;
-  }, [coordinates]);
-
   return (
     <div
       className={`relative flex h-full flex-col gap-3 p-3 transition-colors ${
@@ -29,7 +19,7 @@ function App() {
       <SettingsMenu />
 
       {state === "ready" && coordinates ? (
-        <LocationDetails coordinates={coordinates} openMapUrl={openMapUrl} />
+        <LocationDetails coordinates={coordinates} />
       ) : (
         <StatusPanel state={state} errorMessage={errorMessage} />
       )}
