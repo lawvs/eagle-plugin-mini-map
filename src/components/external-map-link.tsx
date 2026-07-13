@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import type { MouseEvent } from "react";
 import { eagle } from "../eagle";
 import { IN_EAGLE } from "../eagle/env";
@@ -43,7 +44,7 @@ export function ExternalMapLink({ coordinates }: ExternalMapLinkProps) {
       }`}
     >
       View on {externalMap.label}
-      <span aria-hidden>&rarr;</span>
+      <ArrowRight aria-hidden="true" className="size-3" />
     </a>
   );
 }
