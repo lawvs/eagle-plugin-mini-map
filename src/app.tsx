@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div
-      className={`relative flex h-full flex-col gap-3 p-3 transition-colors ${
+      className={`group relative flex min-h-screen flex-col gap-3 p-3 transition-colors ${
         isLightTheme ? "text-slate-900" : "text-white/90"
       } ${!IN_EAGLE ? "mx-auto max-w-md" : ""}`}
     >
