@@ -64,8 +64,14 @@ interface Item {
   readonly metadataFilePath: string;
 }
 
+/**
+ * Theme values exposed by Eagle. `Auto` is title-cased while named themes are
+ * uppercase, so consumers should normalize them before comparison.
+ *
+ * @see https://developer.eagle.cool/plugin-api/api/event#onthemechanged-callback
+ */
 type EagleTheme =
-  | "AUTO"
+  | "Auto"
   | "LIGHT"
   | "LIGHTGRAY"
   | "GRAY"
@@ -94,6 +100,11 @@ interface EagleEvent {
 
 interface Eagle extends EagleEvent {
   app: {
+    /**
+     * Eagle's current theme. This is a synchronous property, not a promise.
+     *
+     * @see https://developer.eagle.cool/plugin-api/api/app#theme
+     */
     theme: EagleTheme;
     platform: string;
     isDarkColors: () => boolean;

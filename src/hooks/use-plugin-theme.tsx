@@ -16,12 +16,18 @@ export function PluginThemeProvider({ children }: PropsWithChildren) {
   const theme = settings.theme === "eagle" ? eagleTheme : settings.theme;
 
   useLayoutEffect(() => {
+    if (theme === null) return;
+
     const htmlElement = document.documentElement;
     htmlElement.classList.add("no-transition");
     htmlElement.setAttribute("theme", theme);
     htmlElement.setAttribute("platform", eagle.app.platform);
     htmlElement.classList.remove("no-transition");
   }, [theme]);
+
+  // `null` means Eagle has not initialized yet. Rendering now would flash the
+  // fallback light theme before the real theme is available.
+  if (theme === null) return null;
 
   return (
     <PluginThemeContext.Provider value={theme}>
