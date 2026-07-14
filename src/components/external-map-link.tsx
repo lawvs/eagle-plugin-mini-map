@@ -33,6 +33,7 @@ export function ExternalMapLink({ coordinates }: ExternalMapLinkProps) {
 
   return (
     <a
+      key={settings.externalMapProvider}
       href={externalMap.url}
       target="_blank"
       rel="noreferrer"

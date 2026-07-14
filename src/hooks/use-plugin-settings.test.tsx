@@ -1,8 +1,17 @@
 // @vitest-environment jsdom
 
-import { act, cleanup, renderHook } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react";
 import type { PropsWithChildren } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ExternalMapLink } from "../components/external-map-link";
+import { SettingsMenu } from "../components/settings-menu";
 import {
   DEFAULT_PLUGIN_SETTINGS,
   PLUGIN_SETTINGS_STORAGE_KEY,
@@ -11,6 +20,10 @@ import {
   PluginSettingsProvider,
   usePluginSettings,
 } from "./use-plugin-settings";
+
+vi.mock("./use-is-dark-theme", () => ({
+  useIsDarkTheme: () => false,
+}));
 
 function SettingsWrapper({ children }: PropsWithChildren) {
   return <PluginSettingsProvider>{children}</PluginSettingsProvider>;
@@ -118,5 +131,29 @@ describe("PluginSettingsProvider", () => {
       "Failed to persist plugin settings",
       error,
     );
+  });
+
+  it("replaces the external map link when its provider changes", () => {
+    render(
+      <SettingsWrapper>
+        <SettingsMenu />
+        <ExternalMapLink
+          coordinates={{ latitude: 1.3521, longitude: 103.8198 }}
+        />
+      </SettingsWrapper>,
+    );
+    const openStreetMapLink = screen.getByRole<HTMLAnchorElement>("link", {
+      name: "View on OpenStreetMap",
+    });
+
+    fireEvent.change(screen.getByRole("combobox", { name: "Open in" }), {
+      target: { value: "google" },
+    });
+
+    const googleMapsLink = screen.getByRole<HTMLAnchorElement>("link", {
+      name: "View on Google Maps",
+    });
+    expect(googleMapsLink.href).toContain("google.com/maps");
+    expect(googleMapsLink).not.toBe(openStreetMapLink);
   });
 });
