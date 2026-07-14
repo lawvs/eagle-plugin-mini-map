@@ -73,15 +73,18 @@ describe("App settings access", () => {
 
     render(<App />);
 
-    const settingsButton = screen.getByLabelText("Settings");
+    const settingsButton = screen.getByRole("button", { name: "Settings" });
     expect(settingsButton).toBeTruthy();
+
     fireEvent.click(settingsButton);
+
     expect(screen.getByRole("combobox", { name: "Theme" })).toBeTruthy();
   });
 
   it("shows the current settings and exact choices", () => {
     render(<App />);
-    fireEvent.click(screen.getByLabelText("Settings"));
+
+    fireEvent.click(screen.getByRole("button", { name: "Settings" }));
 
     const select = (name: string) =>
       screen.getByRole<HTMLSelectElement>("combobox", { name });
