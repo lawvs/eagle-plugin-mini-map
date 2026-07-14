@@ -32,6 +32,31 @@ afterEach(() => {
 });
 
 describe("SettingsMenu", () => {
+  it("opens and dismisses the settings panel without native popover support", () => {
+    render(<SettingsMenu />);
+
+    const trigger = screen.getByRole("button", { name: "Settings" });
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+    expect(screen.queryByRole("dialog", { name: "Settings" })).toBeNull();
+
+    fireEvent.click(trigger);
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+    expect(screen.getByRole("dialog", { name: "Settings" })).toBeTruthy();
+
+    fireEvent.pointerDown(document.body);
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+    expect(screen.queryByRole("dialog", { name: "Settings" })).toBeNull();
+
+    fireEvent.click(trigger);
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+    expect(screen.queryByRole("dialog", { name: "Settings" })).toBeNull();
+  });
+
   it.each([
     ["Theme", "light", { theme: "light" }],
     ["Map style", "dark", { mapStyle: "dark" }],
@@ -41,9 +66,14 @@ describe("SettingsMenu", () => {
     (accessibleName, value, expectedPatch) => {
       render(<SettingsMenu />);
 
-      fireEvent.change(screen.getByRole("combobox", { name: accessibleName }), {
-        target: { value },
-      });
+      fireEvent.click(screen.getByRole("button", { name: "Settings" }));
+
+      fireEvent.change(
+        screen.getByRole("combobox", {
+          name: accessibleName,
+        }),
+        { target: { value } },
+      );
 
       expect(mocks.updateSettings).toHaveBeenCalledOnce();
       expect(mocks.updateSettings).toHaveBeenCalledWith(expectedPatch);
