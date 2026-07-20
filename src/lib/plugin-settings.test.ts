@@ -67,6 +67,17 @@ describe("readPluginSettings", () => {
     });
   });
 
+  it.each(["amap", "baidu"] as const)(
+    "accepts the %s external map provider",
+    (externalMapProvider) => {
+      const storage = readableStorage(JSON.stringify({ externalMapProvider }));
+
+      expect(readPluginSettings(storage).externalMapProvider).toBe(
+        externalMapProvider,
+      );
+    },
+  );
+
   it("keeps valid fields when other fields are missing or invalid", () => {
     const storage = readableStorage(
       JSON.stringify({

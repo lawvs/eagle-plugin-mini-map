@@ -1,6 +1,10 @@
+import {
+  isExternalMapProvider,
+  type ExternalMapProvider,
+} from "./external-map";
+
 export type ThemePreference = "eagle" | "light" | "dark";
 export type MapStylePreference = "auto" | "light" | "dark";
-export type ExternalMapProvider = "openstreetmap" | "google" | "apple";
 
 export interface PluginSettings {
   theme: ThemePreference;
@@ -26,10 +30,6 @@ function isThemePreference(value: unknown): value is ThemePreference {
 
 function isMapStylePreference(value: unknown): value is MapStylePreference {
   return value === "auto" || value === "light" || value === "dark";
-}
-
-function isExternalMapProvider(value: unknown): value is ExternalMapProvider {
-  return value === "openstreetmap" || value === "google" || value === "apple";
 }
 
 export function readPluginSettings(

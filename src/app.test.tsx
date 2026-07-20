@@ -101,6 +101,8 @@ describe("App settings access", () => {
       "OpenStreetMap",
       "Google Maps",
       "Apple Maps",
+      "AMap",
+      "Baidu Maps",
     ]);
   });
 });
