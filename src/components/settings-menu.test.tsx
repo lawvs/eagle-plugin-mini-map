@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => {
     theme: "dark",
     mapStyle: "light",
     externalMapProvider: "apple",
+    zoom: 13,
   };
 
   return { settings, updateSettings: vi.fn() };

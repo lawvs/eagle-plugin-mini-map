@@ -9,8 +9,11 @@ import {
 } from "react";
 import { useIsDarkTheme } from "../hooks/use-is-dark-theme";
 import { usePluginSettings } from "../hooks/use-plugin-settings";
+import {
+  EXTERNAL_MAP_PROVIDER_OPTIONS,
+  type ExternalMapProvider,
+} from "../lib/external-map";
 import type {
-  ExternalMapProvider,
   MapStylePreference,
   ThemePreference,
 } from "../lib/plugin-settings";
@@ -39,12 +42,6 @@ const MAP_STYLE_OPTIONS = [
   { value: "light", label: "Light" },
   { value: "dark", label: "Dark" },
 ] as const satisfies readonly SettingOption<MapStylePreference>[];
-
-const EXTERNAL_MAP_PROVIDER_OPTIONS = [
-  { value: "openstreetmap", label: "OpenStreetMap" },
-  { value: "google", label: "Google Maps" },
-  { value: "apple", label: "Apple Maps" },
-] as const satisfies readonly SettingOption<ExternalMapProvider>[];
 
 const SETTINGS_DIALOG_ID = "settings-dialog";
 

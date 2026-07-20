@@ -56,6 +56,7 @@ describe("readPluginSettings", () => {
         theme: "dark",
         mapStyle: "light",
         externalMapProvider: "apple",
+        zoom: 16,
         unknown: "ignored",
       }),
     );
@@ -64,14 +65,27 @@ describe("readPluginSettings", () => {
       theme: "dark",
       mapStyle: "light",
       externalMapProvider: "apple",
+      zoom: 16,
     });
   });
+
+  it.each(["amap", "baidu"] as const)(
+    "accepts the %s external map provider",
+    (externalMapProvider) => {
+      const storage = readableStorage(JSON.stringify({ externalMapProvider }));
+
+      expect(readPluginSettings(storage).externalMapProvider).toBe(
+        externalMapProvider,
+      );
+    },
+  );
 
   it("keeps valid fields when other fields are missing or invalid", () => {
     const storage = readableStorage(
       JSON.stringify({
         theme: "light",
         mapStyle: "satellite",
+        zoom: 19,
       }),
     );
 
@@ -79,6 +93,7 @@ describe("readPluginSettings", () => {
       theme: "light",
       mapStyle: "auto",
       externalMapProvider: "openstreetmap",
+      zoom: 13,
     });
   });
 
@@ -114,6 +129,7 @@ describe("writePluginSettings", () => {
       theme: "dark",
       mapStyle: "dark",
       externalMapProvider: "google",
+      zoom: 15,
     };
 
     writePluginSettings(settings, storage);

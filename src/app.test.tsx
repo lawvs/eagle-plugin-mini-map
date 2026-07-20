@@ -22,6 +22,7 @@ const mocks = vi.hoisted(() => {
     theme: "dark",
     mapStyle: "light",
     externalMapProvider: "apple",
+    zoom: 13,
   };
 
   return {
@@ -101,6 +102,8 @@ describe("App settings access", () => {
       "OpenStreetMap",
       "Google Maps",
       "Apple Maps",
+      "AMap",
+      "Baidu Maps",
     ]);
   });
 });

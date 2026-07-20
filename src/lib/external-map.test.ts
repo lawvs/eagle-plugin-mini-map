@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ExternalMapProvider } from "./plugin-settings";
-import { getExternalMap } from "./external-map";
+import { getExternalMap, type ExternalMapProvider } from "./external-map";
 import type { Coordinates } from "../types";
 
 interface ExternalMapTestCase {
@@ -35,6 +34,22 @@ const testCases: ExternalMapTestCase[] = [
     expected: {
       label: "Apple Maps",
       url: "https://maps.apple.com/?ll=-33.8688%2C151.2093&z=16&q=Location",
+    },
+  },
+  {
+    provider: "amap",
+    coordinates: { latitude: -33.8688, longitude: 151.2093 },
+    expected: {
+      label: "AMap",
+      url: "https://uri.amap.com/marker?position=151.2093%2C-33.8688&name=Location&src=eagle-plugin-mini-map&coordinate=wgs84&callnative=0",
+    },
+  },
+  {
+    provider: "baidu",
+    coordinates: { latitude: -33.8688, longitude: 151.2093 },
+    expected: {
+      label: "Baidu Maps",
+      url: "https://api.map.baidu.com/marker?location=-33.8688%2C151.2093&title=Location&content=Location&output=html&coord_type=wgs84&src=webapp.eagle.mini-map",
     },
   },
 ];

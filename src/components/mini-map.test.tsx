@@ -22,12 +22,16 @@ const mocks = vi.hoisted(() => {
     theme: "eagle",
     mapStyle: "auto",
     externalMapProvider: "openstreetmap",
+    zoom: 13,
   };
 
   return {
     settings,
     isDark: false,
     recordMapProps: vi.fn<(props: MockMapProps) => void>(),
+    updateSettings: vi.fn((patch: Partial<PluginSettings>) => {
+      Object.assign(settings, patch);
+    }),
   };
 });
 
@@ -38,7 +42,7 @@ vi.mock("../hooks/use-is-dark-theme", () => ({
 vi.mock("../hooks/use-plugin-settings", () => ({
   usePluginSettings: () => ({
     settings: mocks.settings,
-    updateSettings: vi.fn(),
+    updateSettings: mocks.updateSettings,
   }),
 }));
 
@@ -50,11 +54,12 @@ vi.mock("react-map-gl/maplibre", () => ({
 }));
 
 beforeEach(() => {
-  mocks.settings = {
+  Object.assign(mocks.settings, {
     theme: "eagle",
     mapStyle: "auto",
     externalMapProvider: "openstreetmap",
-  };
+    zoom: 13,
+  });
   mocks.isDark = false;
 });
 
@@ -63,7 +68,15 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("MiniMap map style", () => {
+describe("MiniMap", () => {
+  it("uses the persisted zoom level", () => {
+    mocks.settings.zoom = 16;
+
+    render(<MiniMap latitude={1.3521} longitude={103.8198} />);
+
+    expect(mocks.recordMapProps.mock.lastCall?.[0].zoom).toBe(16);
+  });
+
   it.each([
     ["auto in a light plugin theme", "auto", false, MAP_STYLE_LIGHT],
     ["auto in a dark plugin theme", "auto", true, MAP_STYLE_DARK],
@@ -95,6 +108,7 @@ describe("MiniMap map style", () => {
     mocks.settings.mapStyle = "light";
     rerender(<MiniMap latitude={1.3521} longitude={103.8198} />);
 
+    expect(mocks.updateSettings).toHaveBeenCalledWith({ zoom: 14 });
     expect(screen.getByTestId("map")).toBe(mapElement);
     expect(mocks.recordMapProps.mock.lastCall?.[0]).toMatchObject({
       latitude: 1.3521,

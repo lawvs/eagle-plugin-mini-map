@@ -34,6 +34,7 @@ describe("PluginSettingsProvider", () => {
         theme: "dark",
         mapStyle: "light",
         externalMapProvider: "apple",
+        zoom: 16,
       }),
     );
     const getItem = vi.spyOn(Storage.prototype, "getItem");
@@ -49,6 +50,7 @@ describe("PluginSettingsProvider", () => {
       theme: "dark",
       mapStyle: "light",
       externalMapProvider: "apple",
+      zoom: 16,
     });
   });
 
@@ -87,6 +89,7 @@ describe("PluginSettingsProvider", () => {
         theme: "eagle",
         mapStyle: "dark",
         externalMapProvider: "google",
+        zoom: 13,
       }),
     );
   });
