@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  isExternalMapProvider,
-  type ExternalMapProvider,
-} from "./external-map";
+import { externalMapProviderSchema } from "./external-map";
 
 export const MAP_ZOOM = {
   min: 2,
@@ -25,9 +22,9 @@ const pluginSettingsSchema = z
     mapStyle: z
       .enum(["auto", "light", "dark"])
       .catch(DEFAULT_PLUGIN_SETTINGS.mapStyle),
-    externalMapProvider: z
-      .custom<ExternalMapProvider>(isExternalMapProvider)
-      .catch(DEFAULT_PLUGIN_SETTINGS.externalMapProvider),
+    externalMapProvider: externalMapProviderSchema.catch(
+      DEFAULT_PLUGIN_SETTINGS.externalMapProvider,
+    ),
     zoom: z
       .number()
       .min(MAP_ZOOM.min)

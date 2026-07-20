@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getExternalMap, type ExternalMapProvider } from "./external-map";
+import {
+  externalMapProviderSchema,
+  getExternalMap,
+  type ExternalMapProvider,
+} from "./external-map";
 import type { Coordinates } from "../types";
 
 interface ExternalMapTestCase {
@@ -61,4 +65,18 @@ describe("getExternalMap", () => {
       expect(getExternalMap(provider, coordinates)).toEqual(expected);
     },
   );
+});
+
+describe("externalMapProviderSchema", () => {
+  it("accepts every registered provider", () => {
+    const providers = testCases.map(({ provider }) => provider);
+
+    expect(
+      providers.map((provider) => externalMapProviderSchema.parse(provider)),
+    ).toEqual(providers);
+  });
+
+  it("rejects unknown providers", () => {
+    expect(externalMapProviderSchema.safeParse("unknown").success).toBe(false);
+  });
 });

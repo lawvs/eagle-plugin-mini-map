@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type { Coordinates } from "../types";
 
 interface ExternalMap {
@@ -86,14 +87,9 @@ export const EXTERNAL_MAP_PROVIDER_OPTIONS: readonly ExternalMapProviderOption[]
     label,
   }));
 
-export function isExternalMapProvider(
-  value: unknown,
-): value is ExternalMapProvider {
-  return (
-    typeof value === "string" &&
-    EXTERNAL_MAP_PROVIDER_OPTIONS.some((option) => option.value === value)
-  );
-}
+export const externalMapProviderSchema = z.enum(
+  EXTERNAL_MAP_PROVIDER_OPTIONS.map(({ value }) => value),
+);
 
 export function getExternalMap(
   provider: ExternalMapProvider,
