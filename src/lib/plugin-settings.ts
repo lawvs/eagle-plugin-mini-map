@@ -1,36 +1,46 @@
+import { z } from "zod";
 import {
   isExternalMapProvider,
   type ExternalMapProvider,
 } from "./external-map";
 
-export type ThemePreference = "eagle" | "light" | "dark";
-export type MapStylePreference = "auto" | "light" | "dark";
+export const MAP_ZOOM = {
+  min: 2,
+  max: 18,
+  default: 13,
+} as const;
 
-export interface PluginSettings {
-  theme: ThemePreference;
-  mapStyle: MapStylePreference;
-  externalMapProvider: ExternalMapProvider;
-}
-
-export const DEFAULT_PLUGIN_SETTINGS: Readonly<PluginSettings> = Object.freeze({
+export const DEFAULT_PLUGIN_SETTINGS = Object.freeze({
   theme: "eagle",
   mapStyle: "auto",
   externalMapProvider: "openstreetmap",
-});
+  zoom: MAP_ZOOM.default,
+} as const);
+
+const pluginSettingsSchema = z
+  .object({
+    theme: z
+      .enum(["eagle", "light", "dark"])
+      .catch(DEFAULT_PLUGIN_SETTINGS.theme),
+    mapStyle: z
+      .enum(["auto", "light", "dark"])
+      .catch(DEFAULT_PLUGIN_SETTINGS.mapStyle),
+    externalMapProvider: z
+      .custom<ExternalMapProvider>(isExternalMapProvider)
+      .catch(DEFAULT_PLUGIN_SETTINGS.externalMapProvider),
+    zoom: z
+      .number()
+      .min(MAP_ZOOM.min)
+      .max(MAP_ZOOM.max)
+      .catch(DEFAULT_PLUGIN_SETTINGS.zoom),
+  })
+  .catch(DEFAULT_PLUGIN_SETTINGS);
+
+export type PluginSettings = z.infer<typeof pluginSettingsSchema>;
+export type ThemePreference = PluginSettings["theme"];
+export type MapStylePreference = PluginSettings["mapStyle"];
 
 export const PLUGIN_SETTINGS_STORAGE_KEY = "eagle-plugin-mini-map:settings:v1";
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isThemePreference(value: unknown): value is ThemePreference {
-  return value === "eagle" || value === "light" || value === "dark";
-}
-
-function isMapStylePreference(value: unknown): value is MapStylePreference {
-  return value === "auto" || value === "light" || value === "dark";
-}
 
 export function readPluginSettings(
   storage?: Pick<Storage, "getItem">,
@@ -42,19 +52,7 @@ export function readPluginSettings(
     if (serialized === null) return { ...DEFAULT_PLUGIN_SETTINGS };
 
     const stored: unknown = JSON.parse(serialized);
-    if (!isRecord(stored)) return { ...DEFAULT_PLUGIN_SETTINGS };
-
-    return {
-      theme: isThemePreference(stored.theme)
-        ? stored.theme
-        : DEFAULT_PLUGIN_SETTINGS.theme,
-      mapStyle: isMapStylePreference(stored.mapStyle)
-        ? stored.mapStyle
-        : DEFAULT_PLUGIN_SETTINGS.mapStyle,
-      externalMapProvider: isExternalMapProvider(stored.externalMapProvider)
-        ? stored.externalMapProvider
-        : DEFAULT_PLUGIN_SETTINGS.externalMapProvider,
-    };
+    return { ...pluginSettingsSchema.parse(stored) };
   } catch {
     return { ...DEFAULT_PLUGIN_SETTINGS };
   }

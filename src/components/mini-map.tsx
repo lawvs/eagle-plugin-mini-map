@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import Map from "react-map-gl/maplibre";
 import { useIsDarkTheme } from "../hooks/use-is-dark-theme";
 import { usePluginSettings } from "../hooks/use-plugin-settings";
-import type { MapStylePreference } from "../lib/plugin-settings";
+import { MAP_ZOOM, type MapStylePreference } from "../lib/plugin-settings";
 import type { Coordinates } from "../types";
 import { ZoomControls } from "./zoom-controls";
 
@@ -15,9 +15,6 @@ const MAP_STYLE_LIGHT =
   "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 const MAP_STYLE_DARK =
   "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
-const MIN_ZOOM = 2;
-const MAX_ZOOM = 18;
-const DEFAULT_ZOOM = 13;
 
 function resolveMapStyle(
   preference: MapStylePreference,
@@ -30,10 +27,10 @@ function resolveMapStyle(
 
 export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
   const isDark = useIsDarkTheme();
-  const { settings } = usePluginSettings();
+  const { settings, updateSettings } = usePluginSettings();
   const mapStyle = resolveMapStyle(settings.mapStyle, isDark);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
+  const zoom = settings.zoom;
 
   const handleLoad = useCallback(
     (event: { target: { resize: () => void } }) => {
@@ -44,19 +41,17 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
     [],
   );
 
-  const clampZoom = useCallback((value: number) => {
-    return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
-  }, []);
-
   const handleZoomChange = useCallback(
     (delta: number) => {
-      setZoom((prev) => clampZoom(prev + delta));
+      updateSettings({
+        zoom: Math.min(MAP_ZOOM.max, Math.max(MAP_ZOOM.min, zoom + delta)),
+      });
     },
-    [clampZoom],
+    [updateSettings, zoom],
   );
 
-  const canZoomIn = zoom < MAX_ZOOM;
-  const canZoomOut = zoom > MIN_ZOOM;
+  const canZoomIn = zoom < MAP_ZOOM.max;
+  const canZoomOut = zoom > MAP_ZOOM.min;
 
   return (
     <div
@@ -78,8 +73,8 @@ export function MiniMap({ latitude, longitude, label }: MiniMapProps) {
         latitude={latitude}
         longitude={longitude}
         zoom={zoom}
-        minZoom={MIN_ZOOM}
-        maxZoom={MAX_ZOOM}
+        minZoom={MAP_ZOOM.min}
+        maxZoom={MAP_ZOOM.max}
         style={{ width: "100%", height: "100%" }}
         mapStyle={mapStyle}
         attributionControl={false}

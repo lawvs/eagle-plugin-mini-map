@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
     theme: "eagle",
     mapStyle: "auto",
     externalMapProvider: "openstreetmap",
+    zoom: 13,
   },
 }));
 

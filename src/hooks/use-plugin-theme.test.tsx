@@ -88,6 +88,7 @@ function storeTheme(theme: ThemePreference): void {
       theme,
       mapStyle: "auto",
       externalMapProvider: "openstreetmap",
+      zoom: 13,
     }),
   );
 }

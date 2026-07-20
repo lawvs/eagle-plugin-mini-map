@@ -56,6 +56,7 @@ describe("readPluginSettings", () => {
         theme: "dark",
         mapStyle: "light",
         externalMapProvider: "apple",
+        zoom: 16,
         unknown: "ignored",
       }),
     );
@@ -64,6 +65,7 @@ describe("readPluginSettings", () => {
       theme: "dark",
       mapStyle: "light",
       externalMapProvider: "apple",
+      zoom: 16,
     });
   });
 
@@ -83,6 +85,7 @@ describe("readPluginSettings", () => {
       JSON.stringify({
         theme: "light",
         mapStyle: "satellite",
+        zoom: 19,
       }),
     );
 
@@ -90,6 +93,7 @@ describe("readPluginSettings", () => {
       theme: "light",
       mapStyle: "auto",
       externalMapProvider: "openstreetmap",
+      zoom: 13,
     });
   });
 
@@ -125,6 +129,7 @@ describe("writePluginSettings", () => {
       theme: "dark",
       mapStyle: "dark",
       externalMapProvider: "google",
+      zoom: 15,
     };
 
     writePluginSettings(settings, storage);
