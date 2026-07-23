@@ -71,13 +71,7 @@ interface Item {
  * @see https://developer.eagle.cool/plugin-api/api/event#onthemechanged-callback
  */
 type EagleTheme =
-  | "Auto"
-  | "LIGHT"
-  | "LIGHTGRAY"
-  | "GRAY"
-  | "DARK"
-  | "BLUE"
-  | "PURPLE";
+  "Auto" | "LIGHT" | "LIGHTGRAY" | "GRAY" | "DARK" | "BLUE" | "PURPLE";
 
 type Manifest = typeof manifest;
 

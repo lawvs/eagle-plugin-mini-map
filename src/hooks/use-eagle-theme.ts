@@ -4,12 +4,7 @@ import { IN_EAGLE } from "../eagle/env";
 import type { EagleTheme } from "../eagle/types";
 
 export type ThemeName =
-  | "light"
-  | "lightgray"
-  | "gray"
-  | "dark"
-  | "blue"
-  | "purple";
+  "light" | "lightgray" | "gray" | "dark" | "blue" | "purple";
 
 const DEFAULT_LIGHT_THEME: ThemeName = "light";
 const DEFAULT_DARK_THEME: ThemeName = "gray";
