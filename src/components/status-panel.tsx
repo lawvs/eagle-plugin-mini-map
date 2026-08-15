@@ -42,7 +42,7 @@ export function StatusPanel({ state, errorMessage }: StatusPanelProps) {
       }`}
     >
       <div
-        className={`min-h-45x flex flex-col items-center justify-center rounded-2xl border border-dashed text-center transition-colors ${
+        className={`flex flex-col items-center justify-center rounded-2xl border border-dashed text-center transition-colors ${
           isDark ? "border-white/10 bg-white/5" : "border-slate-300 bg-slate-50"
         }`}
       >
